@@ -1,0 +1,69 @@
+LOPEZ MENU - HOW TO PUBLISH (with customer messages + admin panel)
+===================================================================
+
+Folder contents
+  public/                  the website (menu = index.html, admin panel = admin/index.html)
+  functions/api/messages.js  the small server part that receives and stores messages
+  HOW-TO-PUBLISH.txt       this file
+
+IMPORTANT: from now on, publish with the Terminal command in step 4.
+Dragging the folder into the Cloudflare dashboard uploads only the website,
+not the functions/ folder, and the message form will then show "Sending failed".
+
+
+ONE-TIME SETUP (about 10 minutes)
+---------------------------------
+
+1. Install Node.js (once)
+   Download the "LTS" installer from https://nodejs.org and install it.
+
+2. Create the message storage (Cloudflare dashboard)
+   Storage & Databases -> KV -> Create -> name it: lopez-messages -> Create.
+
+3. Connect storage + set your admin password (Cloudflare dashboard)
+   Workers & Pages -> your project (e.g. lopez-menu) -> Settings
+
+   a) Bindings -> Add -> KV namespace
+        Variable name:  MESSAGES          (exactly this, capital letters)
+        KV namespace:   lopez-messages
+      Save.
+
+   b) Variables and Secrets -> Add
+        Type:   Secret
+        Name:   ADMIN_PASSWORD            (exactly this)
+        Value:  a long password only you know (12+ characters)
+      Save.
+
+   If the page shows separate "Production" and "Preview" settings, do a) and b) for Production.
+
+4. Publish (every time you change something)
+   Open Terminal and run, one line at a time:
+
+     cd ~/Downloads/lopez-site
+     npx wrangler login
+     npx wrangler pages deploy public --project-name lopez-menu
+
+   - Change ~/Downloads/lopez-site if you put the folder somewhere else.
+   - Change lopez-menu to your project's name if it is different.
+   - "wrangler login" opens the browser once to sign in to Cloudflare; later publishes skip it.
+   - Settings from step 3 only apply to deployments made after you saved them.
+
+
+USING IT
+--------
+Menu:         https://lopez-menu.pages.dev
+Admin panel:  https://lopez-menu.pages.dev/admin/
+              (not linked anywhere on the menu; search engines are told not to index it)
+
+In the admin panel: sign in with ADMIN_PASSWORD, then read, mark read/unread, or delete messages.
+New messages have a terracotta bar and a "Nouveau / New" label. Tap "Actualiser / Refresh" to check again.
+
+Limits and behaviour
+  - Free plan: about 500 new messages per day (KV allows 1,000 writes/day), far more than needed.
+  - A new message can take up to about a minute to appear in the admin list.
+  - The panel shows the 200 newest messages; delete old ones you no longer need.
+  - Each visitor can send 5 messages per 10 minutes (anti-spam).
+  - 10 wrong passwords from one connection lock sign-in for 15 minutes.
+  - You get no phone notification for new messages; open the admin panel to check.
+
+To change the password: edit ADMIN_PASSWORD in step 3b, then publish again (step 4).

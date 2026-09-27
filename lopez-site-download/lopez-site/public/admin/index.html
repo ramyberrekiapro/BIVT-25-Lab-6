@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Lopez — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7EFE6; --dark:#2B211C; --gold:#C9A85D; --accent:#C56B4B; --card:#FFFDF8;
+    --ink:#2B211C; --muted:#75675D; --btn:#7A8B72; --line:rgba(43,33,28,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased;}
+  header{background:var(--dark); color:var(--bg); border-bottom:4px solid var(--gold); padding:calc(18px + env(safe-area-inset-top,0px)) 16px 18px;}
+  header .in{max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  h1{font-family:'Playfair Display',serif; font-size:1.4rem; margin:0;}
+  h1 small{font-family:'DM Sans',sans-serif; font-weight:500; font-size:.8rem; opacity:.7; margin-left:6px;}
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+  button{font:600 .85rem 'DM Sans',sans-serif; border-radius:999px; padding:9px 16px; cursor:pointer; border:1px solid var(--btn); background:var(--btn); color:#fff;}
+  button.ghost{background:transparent; color:inherit; border-color:currentColor; opacity:.85;}
+  button.danger{background:transparent; color:var(--accent); border-color:var(--accent);}
+  button:disabled{opacity:.5; cursor:default;}
+  .login{max-width:360px; margin:40px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px;}
+  .login label{display:block; font-size:.85rem; color:var(--muted); margin-bottom:6px;}
+  input{width:100%; font:1rem 'DM Sans',sans-serif; padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
+  input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .err{color:var(--accent); font-size:.85rem; min-height:1.2em; margin:4px 0 0;}
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .count{color:var(--muted); font-size:.9rem;}
+  .msg{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px;}
+  .msg.unread{border-left-color:var(--accent);}
+  .meta{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.8rem; color:var(--muted); margin-bottom:8px;}
+  .who{font-weight:600; color:var(--ink);}
+  .badge{background:var(--accent); color:#fff; border-radius:999px; padding:1px 8px; font-size:.7rem; font-weight:600;}
+  .text{white-space:pre-wrap; word-wrap:break-word; line-height:1.5; margin:0 0 12px;}
+  .actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .actions button{padding:6px 12px; font-size:.78rem;}
+  .empty{text-align:center; color:var(--muted); padding:40px 0;}
+  a{color:var(--accent);}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Lopez <small>Messages</small></h1>
+  <button class="ghost" id="logout" hidden>Déconnexion / Log out</button>
+</div></header>
+
+<main>
+  <form class="login" id="login">
+    <label for="pw">Mot de passe admin / Admin password</label>
+    <input type="password" id="pw" autocomplete="current-password" required>
+    <button type="submit" style="width:100%">Entrer / Sign in</button>
+    <p class="err" id="loginErr"></p>
+  </form>
+
+  <section id="panel" hidden>
+    <div class="bar">
+      <span class="count" id="count"></span>
+      <button id="refresh">Actualiser / Refresh</button>
+    </div>
+    <p class="err" id="panelErr"></p>
+    <div id="list"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var KEY = 'lopez-admin-pw';
+  var pw = '';
+  try{ pw = sessionStorage.getItem(KEY) || ''; }catch(e){}
+  var $ = function(id){ return document.getElementById(id); };
+
+  function api(method, url, body){
+    return fetch(url, {
+      method: method,
+      headers: Object.assign({ 'authorization': 'Bearer ' + pw }, body ? { 'content-type': 'application/json' } : {}),
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); });
+  }
+
+  function errText(d){
+    if (d._status === 401) return 'Mot de passe incorrect / Wrong password';
+    if (d._status === 429) return 'Trop d’essais, réessayez dans 15 min / Too many attempts, try again in 15 min';
+    if (d.error === 'storage_not_configured') return 'Stockage KV non configuré (binding MESSAGES) / KV binding MESSAGES missing';
+    if (d.error === 'ADMIN_PASSWORD is not set') return 'ADMIN_PASSWORD non défini / ADMIN_PASSWORD not set';
+    return 'Erreur / Error (' + (d._status || 'réseau / network') + ')';
+  }
+
+  function showLogin(msg){
+    $('panel').hidden = true; $('logout').hidden = true; $('login').hidden = false;
+    $('loginErr').textContent = msg || '';
+  }
+
+  function fmtDate(iso){
+    try{ return new Date(iso).toLocaleString('fr-FR', { dateStyle:'medium', timeStyle:'short' }); }catch(e){ return iso; }
+  }
+
+  function render(msgs, more){
+    var list = $('list'); list.textContent = '';
+    var unread = msgs.filter(function(m){ return !m.read; }).length;
+    $('count').textContent = msgs.length + ' message' + (msgs.length === 1 ? '' : 's') + ' · ' + unread + ' non lu' + (unread === 1 ? '' : 's') + ' / unread' + (more ? ' · (200 plus récents / newest 200)' : '');
+    if (!msgs.length){
+      var e = document.createElement('p'); e.className = 'empty'; e.textContent = 'Aucun message pour le moment / No messages yet'; list.appendChild(e); return;
+    }
+    msgs.forEach(function(m){
+      var card = document.createElement('article'); card.className = 'msg' + (m.read ? '' : ' unread');
+      var meta = document.createElement('div'); meta.className = 'meta';
+      var who = document.createElement('span'); who.className = 'who'; who.textContent = m.name || 'Anonyme / Anonymous'; meta.appendChild(who);
+      if (m.contact){ var c = document.createElement('span'); c.textContent = m.contact; meta.appendChild(c); }
+      var d = document.createElement('span'); d.textContent = fmtDate(m.date); meta.appendChild(d);
+      var l = document.createElement('span'); l.textContent = (m.lang || 'fr').toUpperCase(); meta.appendChild(l);
+      if (!m.read){ var b = document.createElement('span'); b.className = 'badge'; b.textContent = 'Nouveau / New'; meta.appendChild(b); }
+      var t = document.createElement('p'); t.className = 'text'; t.textContent = m.message;
+      var act = document.createElement('div'); act.className = 'actions';
+      var rb = document.createElement('button'); rb.className = 'ghost';
+      rb.textContent = m.read ? 'Marquer non lu / Mark unread' : 'Marquer lu / Mark read';
+      rb.onclick = function(){ rb.disabled = true; api('PATCH', '/api/messages?id=' + encodeURIComponent(m.id), { read: !m.read }).then(function(r){ if (r.ok) load(); else { rb.disabled = false; $('panelErr').textContent = errText(r); } }); };
+      var db = document.createElement('button'); db.className = 'danger'; db.textContent = 'Supprimer / Delete';
+      db.onclick = function(){
+        if (!confirm('Supprimer ce message ? / Delete this message?')) return;
+        db.disabled = true;
+        api('DELETE', '/api/messages?id=' + encodeURIComponent(m.id)).then(function(r){ if (r.ok) load(); else { db.disabled = false; $('panelErr').textContent = errText(r); } });
+      };
+      act.appendChild(rb); act.appendChild(db);
+      card.appendChild(meta); card.appendChild(t); card.appendChild(act);
+      list.appendChild(card);
+    });
+  }
+
+  function load(){
+    $('panelErr').textContent = '';
+    $('refresh').disabled = true;
+    return api('GET', '/api/messages').then(function(d){
+      $('refresh').disabled = false;
+      if (d._status === 401 || d._status === 429){
+        try{ sessionStorage.removeItem(KEY); }catch(e){}
+        showLogin(errText(d)); return;
+      }
+      if (!d.messages){ $('panelErr').textContent = errText(d); return; }
+      $('login').hidden = true; $('panel').hidden = false; $('logout').hidden = false;
+      render(d.messages, d.more);
+    }).catch(function(){ $('refresh').disabled = false; $('panelErr').textContent = errText({}); });
+  }
+
+  $('login').addEventListener('submit', function(e){
+    e.preventDefault();
+    pw = $('pw').value;
+    try{ sessionStorage.setItem(KEY, pw); }catch(err){}
+    $('pw').value = '';
+    load();
+  });
+  $('refresh').addEventListener('click', load);
+  $('logout').addEventListener('click', function(){
+    pw = ''; try{ sessionStorage.removeItem(KEY); }catch(e){}
+    showLogin('');
+  });
+
+  if (pw) load();
+})();
+</script>
+</body>
+</html>
