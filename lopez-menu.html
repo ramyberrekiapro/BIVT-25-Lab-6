@@ -28,6 +28,13 @@
   .hero .links a:hover{filter:brightness(.9);}
 
 
+  nav.cats{position:sticky; top:0; z-index:10; display:flex; gap:8px; overflow-x:auto; padding:10px 16px; background:var(--bg);
+    border-bottom:1px solid var(--line); scrollbar-width:none; -webkit-overflow-scrolling:touch;}
+  nav.cats::-webkit-scrollbar{display:none;}
+  nav.cats a{flex:none; font-size:.82rem; font-weight:600; color:var(--ink); text-decoration:none; background:var(--card);
+    border:1px solid var(--line); border-radius:999px; padding:7px 14px; white-space:nowrap;}
+  nav.cats a.active{background:var(--dark); color:var(--bg); border-color:var(--dark);}
+
   main{max-width:920px; margin:0 auto; padding:10px 18px 60px;}
   section.cat{padding-top:32px;}
   section.cat h2{font-family:'Playfair Display',serif; font-weight:600; font-size:1.5rem; color:var(--accent); margin:0 0 4px;
@@ -74,6 +81,25 @@
     <a href="https://maps.app.goo.gl/iDiVehnUwiYFkFbt8?g_st=ic" target="_blank" rel="noopener">Localisation</a>
   </div>
 </header>
+
+<nav class="cats" aria-label="Catégories">
+  <a href="#brunch">Brunch Salé</a>
+  <a href="#mocktails">Mocktails</a>
+  <a href="#cold">Cold Drinks</a>
+  <a href="#hot">Hot Drinks</a>
+  <a href="#mojito">Mojito</a>
+  <a href="#frap">Frappuccino</a>
+  <a href="#milk">Milkshake</a>
+  <a href="#jus">Jus de fruit</a>
+  <a href="#smoothies">Smoothies</a>
+  <a href="#salades">Salades</a>
+  <a href="#gauffres">Gauffres</a>
+  <a href="#pancakes">Pancakes</a>
+  <a href="#crepes">Crêpes</a>
+  <a href="#burgers">Burgers</a>
+  <a href="#painsperdus">Pains perdus</a>
+  <a href="#pasta">Pasta</a>
+</nav>
 
 <main>
 
@@ -262,6 +288,24 @@
       <button class="like-btn" aria-label="Aimer"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.8 4.5 2.3.6-1.5 2.5-2.6 4.5-2.3C18 4.5 19.5 8 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
       <div class="info"><h3>Marguarita</h3><p class="desc">Orange, citron.</p>
         <div class="bottom-row"><span class="price">500 DA</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="cat" id="cold">
+  <h2>Cold Drinks</h2>
+  <div class="grid">
+    <article class="card no-img" data-id="ice-matcha">
+      <button class="like-btn" aria-label="Aimer"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.8 4.5 2.3.6-1.5 2.5-2.6 4.5-2.3C18 4.5 19.5 8 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
+      <div class="info"><h3>Ice matcha</h3><p class="desc">Mangue / fruit rouge / fraise.</p>
+        <div class="bottom-row"><span class="price">850 DA</span></div>
+      </div>
+    </article>
+    <article class="card no-img" data-id="affogato">
+      <button class="like-btn" aria-label="Aimer"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.8 4.5 2.3.6-1.5 2.5-2.6 4.5-2.3C18 4.5 19.5 8 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
+      <div class="info"><h3>Affogato</h3><p class="desc">Glace au choix vanille / chocolat.</p>
+        <div class="bottom-row"><span class="price">650 DA</span></div>
       </div>
     </article>
   </div>
@@ -588,24 +632,6 @@
   </div>
 </section>
 
-<section class="cat" id="cold">
-  <h2>Cold Drinks</h2>
-  <div class="grid">
-    <article class="card no-img" data-id="ice-matcha">
-      <button class="like-btn" aria-label="Aimer"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.8 4.5 2.3.6-1.5 2.5-2.6 4.5-2.3C18 4.5 19.5 8 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
-      <div class="info"><h3>Ice matcha</h3><p class="desc">Mangue / fruit rouge / fraise.</p>
-        <div class="bottom-row"><span class="price">850 DA</span></div>
-      </div>
-    </article>
-    <article class="card no-img" data-id="affogato">
-      <button class="like-btn" aria-label="Aimer"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.8 4.5 2.3.6-1.5 2.5-2.6 4.5-2.3C18 4.5 19.5 8 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
-      <div class="info"><h3>Affogato</h3><p class="desc">Glace au choix vanille / chocolat.</p>
-        <div class="bottom-row"><span class="price">650 DA</span></div>
-      </div>
-    </article>
-  </div>
-</section>
-
 <section class="cat" id="salades">
   <h2>Salades</h2>
   <div class="grid">
@@ -803,6 +829,20 @@
       openItemModal(card);
     });
   });
+  var navLinks = document.querySelectorAll('nav.cats a');
+  function setActive(){
+    var cur = navLinks[0];
+    navLinks.forEach(function(a){
+      var sec = document.getElementById(a.getAttribute('href').slice(1));
+      if (sec.getBoundingClientRect().top <= 80) cur = a;
+    });
+    navLinks.forEach(function(a){ a.classList.toggle('active', a === cur); });
+    var nav = cur.parentNode;
+    var left = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2;
+    if (Math.abs(nav.scrollLeft - left) > 4) nav.scrollLeft = left;
+  }
+  window.addEventListener('scroll', setActive, {passive:true});
+  setActive();
 })();
 </script>
 
