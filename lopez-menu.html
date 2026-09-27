@@ -15,7 +15,7 @@
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:inherit}
-  html{scroll-behavior:smooth; scroll-padding-top:calc(64px + env(safe-area-inset-top,0px));}
+  html{scroll-behavior:smooth; scroll-padding-top:calc(12px + env(safe-area-inset-top,0px));}
   body{margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased;}
   img{max-width:100%; display:block;}
 
@@ -28,19 +28,22 @@
   .hero .links a:hover{filter:brightness(.9);}
 
 
-  nav.cats{position:sticky; top:0; z-index:10; display:flex; gap:8px; overflow-x:auto; padding:10px 16px; background:var(--bg);
-    border-bottom:1px solid var(--line); scrollbar-width:none; -webkit-overflow-scrolling:touch;}
-  nav.cats::-webkit-scrollbar{display:none;}
-  nav.cats a{flex:none; font-size:.82rem; font-weight:600; color:var(--ink); text-decoration:none; background:var(--card);
-    border:1px solid var(--line); border-radius:999px; padding:7px 14px; white-space:nowrap;}
-  nav.cats a.active{background:var(--dark); color:var(--bg); border-color:var(--dark);}
+  nav.cats{max-width:920px; margin:0 auto; padding:18px 18px 0; display:flex; flex-direction:column; gap:8px;}
+  nav.cats a{display:flex; justify-content:space-between; align-items:center; font-size:.9rem; font-weight:600; color:var(--ink);
+    text-decoration:none; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:11px 16px;}
+  nav.cats a::after{content:'›'; color:var(--accent); font-size:1.2rem; line-height:1;}
+  nav.cats a:active{background:#F2E9DD;}
+  .to-top{position:fixed; right:16px; bottom:calc(20px + env(safe-area-inset-bottom,0px)); z-index:30; width:44px; height:44px;
+    border-radius:50%; border:none; background:var(--btn); color:#fff; font-size:1.2rem; cursor:pointer;
+    box-shadow:0 4px 12px rgba(43,33,28,.25); opacity:0; pointer-events:none; transition:opacity .2s;}
+  .to-top.show{opacity:1; pointer-events:auto;}
 
-  main{max-width:600px; margin:0 auto; padding:10px 18px 60px;}
+  main{max-width:920px; margin:0 auto; padding:10px 18px 60px;}
   section.cat{padding-top:32px;}
   section.cat h2{font-family:'Playfair Display',serif; font-weight:600; font-size:1.5rem; color:var(--accent); margin:0 0 4px;
     padding-bottom:12px; border-bottom:2px solid var(--gold);}
 
-  .grid{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:14px; margin-top:16px;}
   .card{background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(43,36,28,.06);}
   .card .ph{position:relative; aspect-ratio:4/3; overflow:hidden; background:#fff;}
   .card .ph img{width:100%; height:100%; object-fit:contain; padding:6px;}
@@ -49,14 +52,14 @@
   .like-btn svg{width:18px; height:18px; stroke:var(--accent); fill:none; stroke-width:2; transition:fill .15s,stroke .15s;}
   .like-btn.liked svg{fill:var(--accent); stroke:var(--accent);}
   .card.no-img{position:relative;}
-  .card.no-img .like-btn{top:10px; right:12px; width:32px; height:32px; background:#F2E9DD;}
-  .card.no-img h3{padding-right:40px;}
+  .card.no-img .like-btn{top:8px; right:8px; width:32px; height:32px; background:#F2E9DD;}
+  .card.no-img h3{padding-right:36px;}
   .card.no-img .info{padding-top:14px;}
-  .info{padding:14px 16px 14px; flex:1; display:flex; flex-direction:column;}
-  .card h3{font-family:'Playfair Display',serif; font-weight:600; font-size:1.15rem; margin:0 0 6px; color:var(--ink);}
-  .card p.desc{font-size:.88rem; line-height:1.45; color:var(--muted); margin:0 0 8px; flex:1;}
+  .info{padding:10px 12px 10px; flex:1; display:flex; flex-direction:column;}
+  .card h3{font-family:'Playfair Display',serif; font-weight:600; font-size:.92rem; margin:0 0 4px; color:var(--ink);}
+  .card p.desc{font-size:.74rem; line-height:1.35; color:var(--muted); margin:0 0 8px; flex:1;}
   .bottom-row{display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:10px; width:100%;}
-  .price{font-size:.95rem; font-weight:600; color:var(--accent);}
+  .price{font-size:.76rem; font-weight:600; color:var(--accent);}
 
   .item-modal-overlay{position:fixed; inset:0; background:rgba(20,10,5,.55); display:none; align-items:center; justify-content:center; z-index:50; padding:20px;
     padding-top:calc(20px + env(safe-area-inset-top,0px)); padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));}
@@ -82,7 +85,7 @@
   </div>
 </header>
 
-<nav class="cats" aria-label="Catégories">
+<nav class="cats" id="categories" aria-label="Catégories">
   <a href="#brunch">Brunch Salé</a>
   <a href="#mocktails">Mocktails</a>
   <a href="#cold">Cold Drinks</a>
@@ -755,6 +758,8 @@
 </main>
 
 
+<button class="to-top" id="toTop" aria-label="Catégories">↑</button>
+
 <div class="item-modal-overlay" id="itemModalOverlay">
   <div class="item-modal">
     <button class="im-close" id="itemModalClose" aria-label="Fermer">&times;</button>
@@ -829,20 +834,12 @@
       openItemModal(card);
     });
   });
-  var navLinks = document.querySelectorAll('nav.cats a');
-  function setActive(){
-    var cur = navLinks[0];
-    navLinks.forEach(function(a){
-      var sec = document.getElementById(a.getAttribute('href').slice(1));
-      if (sec.getBoundingClientRect().top <= 80) cur = a;
-    });
-    navLinks.forEach(function(a){ a.classList.toggle('active', a === cur); });
-    var nav = cur.parentNode;
-    var left = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2;
-    if (Math.abs(nav.scrollLeft - left) > 4) nav.scrollLeft = left;
-  }
-  window.addEventListener('scroll', setActive, {passive:true});
-  setActive();
+  var toTop = document.getElementById('toTop');
+  var cats = document.getElementById('categories');
+  function updateToTop(){ toTop.classList.toggle('show', cats.getBoundingClientRect().bottom < 0); }
+  toTop.addEventListener('click', function(){ cats.scrollIntoView({behavior:'smooth'}); });
+  window.addEventListener('scroll', updateToTop, {passive:true});
+  updateToTop();
 })();
 </script>
 
