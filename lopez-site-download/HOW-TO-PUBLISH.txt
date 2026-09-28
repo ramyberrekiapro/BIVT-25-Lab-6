@@ -1,103 +1,88 @@
 LOPEZ MENU - PUT THE WEBSITE ONLINE (only clicking, no Terminal)
 =================================================================
 
-You need: the file  lopez-menu-upload.zip  and a free Cloudflare account.
-Time: about 10 minutes, once. Button names may differ slightly; the words are close.
+This project is a Cloudflare PAGES project: a static site (public/) plus server code
+(functions/api/*.js) that Cloudflare runs at /api/... . Pages compiles the functions/ folder
+itself when it builds from GitHub. That is the method below.
 
-Do not unzip the file. Do not use the old  lopez-site.zip  for uploading.
+Why not "Worker" or drag-and-drop: a Worker made by uploading files only serves the files
+(so /api/likes gives 404), and drag-and-drop uploads also skip the functions/ folder.
 
-
-PART 1 - Put the site online
-----------------------------
-1. Go to https://dash.cloudflare.com and log in.
-2. In the menu on the left, click  "Workers & Pages"
-   (it can be inside  "Compute (Workers)"  - click that first if you see it).
-
-   IF YOU ALREADY HAVE A PROJECT (for example "lopez-menu") from your earlier try:
-   3. Click your project's name.
-   4. Click the  "Create deployment"  button (top right).
-   5. Drag  lopez-menu-upload.zip  into the upload box (or click "select from computer").
-   6. Click  "Save and Deploy".  Wait until it says "Success". Go to PART 2.
-
-   IF YOU HAVE NO PROJECT YET:
-   3. Click the blue  "Create"  button (or "Create application").
-   4. Click the  "Pages"  tab. (If you only see Workers, click the link
-      "Looking to deploy Pages? Get started" at the bottom.)
-   5. Next to "Drag and drop your files" / "Upload assets", click  "Get started"  / "Upload assets".
-   6. Project name: type  lopez-menu   -> click  "Create project".
-   7. Drag  lopez-menu-upload.zip  into the upload box -> click  "Deploy site".
-   8. Wait for "Success", then click  "Continue to project".
-
-   The menu now works at  https://lopez-menu.pages.dev
-   (hearts, messages and the owner's page start working after PART 2-4).
+The code is on GitHub:  ramyberrekiapro/BIVT-25-Lab-6,  branch  claude/affectionate-keller-n0mht4,
+folder  lopez-site-download/lopez-site .
 
 
-PART 2 - Create the database (stores likes, messages and your menu changes)
----------------------------------------------------------------------------
-1. In the menu on the left, click  "Storage & Databases"  ->  "D1 SQL Database".
-2. Click  "Create"  (or "Create database").
-3. Name: type  lopez-db   -> click  "Create".
-   Nothing else to do here - the site sets the database up by itself.
+PART 1 - Create the Pages project from GitHub (once)
+----------------------------------------------------
+1. https://dash.cloudflare.com -> left menu "Workers & Pages" (maybe inside "Compute (Workers)").
+2. Click "Create" -> tab "Pages" (or the link "Looking to deploy Pages? Get started").
+3. Click "Connect to Git" / "Import an existing Git repository" -> "Get started".
+4. Choose GitHub. If asked, click "Connect GitHub" / "Install & Authorize" and allow access to
+   the repository  BIVT-25-Lab-6  (choosing "Only select repositories" is fine).
+5. Select  BIVT-25-Lab-6  -> "Begin setup".
+6. Fill in exactly:
+     Project name:            lopez-menu
+     Production branch:       claude/affectionate-keller-n0mht4
+     Framework preset:        None
+     Build command:           (leave empty)
+     Build output directory:  public
+     Root directory (under "Advanced" / "Root directory"):  lopez-site-download/lopez-site
+7. Click "Save and Deploy". Wait for "Success" (1-2 minutes).
+   The address is shown, e.g.  https://lopez-menu.pages.dev
 
 
-PART 3 - Connect the database and set your password
----------------------------------------------------
-1. Left menu -> "Workers & Pages" -> click  lopez-menu.
-2. Click the  "Settings"  tab.
-3. Find  "Bindings"  -> click  "+ Add"  ->  choose  "D1 database".
-      Variable name:   DB          (exactly these two capital letters)
-      D1 database:     lopez-db    (pick it from the list)
-   Click  "Save".
-4. Still in Settings, find  "Variables and Secrets"  -> click  "+ Add".
-      Type:            Secret
-      Variable name:   ADMIN_PASSWORD      (exactly like this)
-      Value:           your owner password (at least 12 characters; write it down)
-   Click  "Save".
-   If Cloudflare asks "Production" or "Preview", choose  Production.
+PART 2 - Connect the database and the password
+----------------------------------------------
+Use the database you already created (lopez-db). Its data is kept.
+1. Open the new project lopez-menu -> tab "Settings".
+2. "Bindings" -> "+ Add" -> "D1 database":
+      Variable name:  DB
+      D1 database:    lopez-db
+   -> "Save".
+3. "Variables and Secrets" -> "+ Add":
+      Type: Secret    Variable name: ADMIN_PASSWORD    Value: your password
+   -> "Save".   (If asked Production/Preview: Production.)
 
 
-PART 4 - Upload once more (needed so the settings from PART 3 take effect)
---------------------------------------------------------------------------
-1. Click the  "Deployments"  tab of lopez-menu.
-2. Click  "Create deployment"  -> drag  lopez-menu-upload.zip  ->  "Save and Deploy".
+PART 3 - Deploy again so the settings apply
+-------------------------------------------
+Tab "Deployments" -> on the latest deployment click "..." (three dots) -> "Retry deployment".
+Wait for "Success".
 
 
-PART 5 - Check that everything works
-------------------------------------
-1. Open  https://lopez-menu.pages.dev  on your phone.
-2. Tap a heart: after a second a number "1" appears next to it.
-3. At the bottom, send a test message in "Écrivez-nous".
-4. Open  https://lopez-menu.pages.dev/admin/  and sign in with your password.
-   You should see the test message. Delete it.
-
-If something is wrong, the owner's page tells you:
-  "Base D1 non configurée / D1 binding DB missing"   -> PART 3 step 3 is missing or misspelled,
-                                                        or PART 4 was not done.
-  "ADMIN_PASSWORD non défini"                         -> PART 3 step 4 is missing, or PART 4 not done.
-  "Mot de passe incorrect"                            -> you typed a different password.
-  Hearts show no numbers / "L'envoi a échoué"         -> same as the first line.
+PART 4 - Check
+--------------
+1. https://<your-address>.pages.dev/api/likes   -> shows  {"counts":{...}}
+2. https://<your-address>.pages.dev/api/menu    -> shows  {"items":[...]}
+3. https://<your-address>.pages.dev/admin/      -> sign in -> Messages, Menu, J'aime tabs load.
+If /api/likes shows {"error":"database_not_configured"}: PART 2 step 2 is missing, or PART 3 not done.
+Only when all of this works: delete the old Worker (Workers & Pages -> lopezmenu -> Settings ->
+Delete). Nothing in the database is deleted with it.
 
 
-USING THE OWNER'S PAGE  (https://lopez-menu.pages.dev/admin/)
-------------------------------------------------------------
+UPDATES
+-------
+Every time Claude pushes a change to the branch above, Cloudflare publishes it automatically
+(1-2 minutes). You never upload a ZIP again. Changes you make on the owner's page are stored in
+the database and are kept.
+
+
+USING THE OWNER'S PAGE  (https://<your-address>.pages.dev/admin/)
+----------------------------------------------------------------
   Messages  - customer messages; mark as read or delete.
-  Menu      - tap "Modifier / Edit" on any item: change name, description (French and
-              English), price, photo, or untick "Visible" to hide it. Tap "Enregistrer / Save".
-              "+ Ajouter / Add" adds a new item to a category.
-              Changes appear on the menu within seconds. No need to upload anything again.
+  Menu      - "Modifier / Edit" on any item: name, description (French and English), price,
+              photo, or untick "Visible" to hide it -> "Enregistrer / Save".
+              "+ Ajouter / Add" adds a new item to a category. Changes show within seconds.
   J'aime    - every item ranked by number of likes.
-
-Only upload a new ZIP when Claude sends you one. Your changes made on the owner's page
-are kept in the database and are not lost when you upload a new ZIP.
 
 Good to know
   - Everything here is on Cloudflare's free plan.
   - Each visitor can send 5 messages per 10 minutes and like/unlike 60 times per 10 minutes.
   - 10 wrong passwords lock sign-in for 15 minutes.
-  - You get no phone notification for new messages; open the owner's page to check.
-  - To change the password: PART 3 step 4 (edit ADMIN_PASSWORD), then PART 4.
+  - No phone notification for new messages; open the owner's page to check.
+  - Change the password: Settings -> Variables and Secrets -> edit ADMIN_PASSWORD, then PART 3.
 
 
-For developers: the source is in lopez-site/ (public/ = site, functions/ + lib/ = server).
-tools/build.py rebuilds public/menu-data.json; tools/make_upload.py builds lopez-menu-upload.zip
-(compiles functions/ into _worker.js, which dashboard uploads need).
+For developers: public/ = site, functions/ + lib/ = Pages Functions (D1 binding DB, secret
+ADMIN_PASSWORD). tools/build.py rebuilds public/menu-data.json. tools/make_upload.py builds a
+dashboard-upload ZIP with a compiled _worker.js (alternative to the GitHub method; not used now).
