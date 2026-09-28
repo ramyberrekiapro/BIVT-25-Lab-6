@@ -522,6 +522,12 @@
   $('logout').addEventListener('click', function(){
     api('POST', '/api/admin/logout').then(function(){ showLogin(''); }, function(){ showLogin(''); });
   });
+  // opened as a file from the computer: there is no server, so nothing can work here
+  if (location.protocol === 'file:'){
+    showLogin('Cette page fonctionne seulement depuis l’adresse du site publié, ex. https://lopez-menu.pages.dev/admin/ — pas en ouvrant le fichier sur l’ordinateur. / This page only works from the published site address, e.g. https://lopez-menu.pages.dev/admin/ — not by opening the file on the computer.');
+    $('loginBtn').disabled = true;
+    return;
+  }
   // on open: resume an existing session, otherwise show the sign-in form
   fetch('/api/admin/session', { credentials:'same-origin', cache:'no-store' })
     .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); })
