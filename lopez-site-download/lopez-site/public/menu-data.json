@@ -1,0 +1,1146 @@
+{
+ "sections": [
+  {
+   "id": "brunch",
+   "title_fr": "Brunch Salé",
+   "title_en": "Savory Brunch"
+  },
+  {
+   "id": "mocktails",
+   "title_fr": "Mocktails",
+   "title_en": "Mocktails"
+  },
+  {
+   "id": "hot",
+   "title_fr": "Hot Drinks",
+   "title_en": "Hot Drinks"
+  },
+  {
+   "id": "mojito",
+   "title_fr": "Mojito",
+   "title_en": "Mojito"
+  },
+  {
+   "id": "frap",
+   "title_fr": "Frappuccino",
+   "title_en": "Frappuccino"
+  },
+  {
+   "id": "milk",
+   "title_fr": "Milkshake",
+   "title_en": "Milkshake"
+  },
+  {
+   "id": "jus",
+   "title_fr": "Jus de fruit",
+   "title_en": "Fruit Juices"
+  },
+  {
+   "id": "smoothies",
+   "title_fr": "Smoothies",
+   "title_en": "Smoothies"
+  },
+  {
+   "id": "cold",
+   "title_fr": "Cold Drinks",
+   "title_en": "Cold Drinks"
+  },
+  {
+   "id": "salades",
+   "title_fr": "Salades",
+   "title_en": "Salads"
+  },
+  {
+   "id": "gauffres",
+   "title_fr": "Gauffres",
+   "title_en": "Waffles"
+  },
+  {
+   "id": "pancakes",
+   "title_fr": "Pancakes",
+   "title_en": "Pancakes"
+  },
+  {
+   "id": "crepes",
+   "title_fr": "Crêpes",
+   "title_en": "Crêpes"
+  },
+  {
+   "id": "burgers",
+   "title_fr": "Burgers",
+   "title_en": "Burgers"
+  },
+  {
+   "id": "painsperdus",
+   "title_fr": "Pains perdus",
+   "title_en": "French Toast"
+  },
+  {
+   "id": "pasta",
+   "title_fr": "Pasta",
+   "title_en": "Pasta"
+  }
+ ],
+ "items": [
+  {
+   "id": "feta-bruschetta",
+   "section": "brunch",
+   "name_fr": "Fêta bruschetta",
+   "name_en": "Feta bruschetta",
+   "desc_fr": "Toast, sauce pesto, feta artisanale, tomates confites, salade sauce balsamique.",
+   "desc_en": "Toast, pesto sauce, artisanal feta, confit tomatoes, salad with balsamic dressing.",
+   "price": "1,200 DA",
+   "img": "img/feta-bruschetta.jpg"
+  },
+  {
+   "id": "toast-buratta",
+   "section": "brunch",
+   "name_fr": "Toast buratta",
+   "name_en": "Burrata toast",
+   "desc_fr": "Toast, sauce pesto, stracciatella artisanale, tomates confites, salade sauce balsamique.",
+   "desc_en": "Toast, pesto sauce, artisanal stracciatella, confit tomatoes, salad with balsamic dressing.",
+   "price": "1,500 DA",
+   "img": "img/toast-buratta.jpg"
+  },
+  {
+   "id": "pate-volaille-gervais",
+   "section": "brunch",
+   "name_fr": "Paté de volaille & Gervais",
+   "name_en": "Chicken pâté & Gervais",
+   "desc_fr": "Toast, pâté de volaille artisanale, Gervais artisanale, salade tomate, sauce pesto, sauce balsamique.",
+   "desc_en": "Toast, artisanal chicken pâté, artisanal Gervais cream cheese, tomato salad, pesto sauce, balsamic sauce.",
+   "price": "1,200 DA",
+   "img": "img/pate-volaille-gervais.jpg"
+  },
+  {
+   "id": "avocat-champignon",
+   "section": "brunch",
+   "name_fr": "Avocat champignon",
+   "name_en": "Avocado & mushroom",
+   "desc_fr": "Toast, guacamole d'avocat, sauce forestière, salade champignons frais, tomate, sauce balsamique, sauce pesto.",
+   "desc_en": "Toast, avocado guacamole, forestière mushroom sauce, fresh mushroom salad, tomato, balsamic sauce, pesto sauce.",
+   "price": "1,500 DA",
+   "img": "img/avocat-champignon.jpg"
+  },
+  {
+   "id": "croissant-sale",
+   "section": "brunch",
+   "name_fr": "Croissant salé",
+   "name_en": "Savory croissant",
+   "desc_fr": "Guacamole d'avocat, œuf poché, saumon, salade tomate, sauce balsamique, sauce pesto.",
+   "desc_en": "Avocado guacamole, poached egg, salmon, tomato salad, balsamic sauce, pesto sauce.",
+   "price": "1,950 DA",
+   "img": "img/croissant-sale.jpg"
+  },
+  {
+   "id": "amigos",
+   "section": "brunch",
+   "name_fr": "Amigos",
+   "name_en": "Amigos",
+   "desc_fr": "Œufs, fromage Goudan artisanale, fromage gruyère artisanale, salade tomate concombre.",
+   "desc_en": "Eggs, artisanal Gouda cheese, artisanal Gruyère cheese, tomato & cucumber salad.",
+   "price": "1,000 DA",
+   "img": "img/amigos.jpg"
+  },
+  {
+   "id": "omelette-champignon",
+   "section": "brunch",
+   "name_fr": "Omelette champignon",
+   "name_en": "Mushroom omelette",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "800 DA",
+   "img": "img/omelette-champignon.jpg"
+  },
+  {
+   "id": "avocat-saumon",
+   "section": "brunch",
+   "name_fr": "Avocat & saumon",
+   "name_en": "Avocado & salmon",
+   "desc_fr": "Toast, guacamole d'avocat, saumon, œuf poché, salade tomate, sauce balsamique, concombre, sauce pesto.",
+   "desc_en": "Toast, avocado guacamole, salmon, poached egg, tomato salad, balsamic sauce, cucumber, pesto sauce.",
+   "price": "1,950 DA",
+   "img": "img/avocat-saumon.jpg"
+  },
+  {
+   "id": "omelette-fromage",
+   "section": "brunch",
+   "name_fr": "Omelette fromage",
+   "name_en": "Cheese omelette",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "700 DA",
+   "img": "img/omelette-fromage.jpg"
+  },
+  {
+   "id": "pain-perdu-sale",
+   "section": "brunch",
+   "name_fr": "Pain perdu salé",
+   "name_en": "Savory French toast",
+   "desc_fr": "Guacamole d'avocat, œufs mollets, saumon, salade tomate concombre.",
+   "desc_en": "Avocado guacamole, soft-boiled eggs, salmon, tomato & cucumber salad.",
+   "price": "1,950 DA",
+   "img": "img/pain-perdu-sale.jpg"
+  },
+  {
+   "id": "tostada",
+   "section": "brunch",
+   "name_fr": "Tostada",
+   "name_en": "Tostada",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/tostada.jpg"
+  },
+  {
+   "id": "sun-flower",
+   "section": "mocktails",
+   "name_fr": "Sun flower",
+   "name_en": "Sun flower",
+   "desc_fr": "Ananas, vanille, orange.",
+   "desc_en": "Pineapple, vanilla, orange.",
+   "price": "650 DA",
+   "img": "img/sun-flower.jpg"
+  },
+  {
+   "id": "pink-lady",
+   "section": "mocktails",
+   "name_fr": "Pink lady",
+   "name_en": "Pink lady",
+   "desc_fr": "Coco, fruit rouge.",
+   "desc_en": "Coconut, red berries.",
+   "price": "700 DA",
+   "img": "img/pink-lady.jpg"
+  },
+  {
+   "id": "coco-moon",
+   "section": "mocktails",
+   "name_fr": "Coco moon",
+   "name_en": "Coco moon",
+   "desc_fr": "Grenadine, citron, ananas.",
+   "desc_en": "Grenadine, lemon, pineapple.",
+   "price": "650 DA",
+   "img": "img/coco-moon.jpg"
+  },
+  {
+   "id": "bora-bora",
+   "section": "mocktails",
+   "name_fr": "Bora bora",
+   "name_en": "Bora bora",
+   "desc_fr": "Fruit de passion.",
+   "desc_en": "Passion fruit.",
+   "price": "600 DA",
+   "img": "img/bora-bora.jpg"
+  },
+  {
+   "id": "paradis",
+   "section": "mocktails",
+   "name_fr": "Paradis",
+   "name_en": "Paradis",
+   "desc_fr": "Orange, mangue.",
+   "desc_en": "Orange, mango.",
+   "price": "600 DA",
+   "img": "img/paradis.jpg"
+  },
+  {
+   "id": "black-sea",
+   "section": "mocktails",
+   "name_fr": "Black sea",
+   "name_en": "Black sea",
+   "desc_fr": "Coca cola, blue curaçao.",
+   "desc_en": "Coca-Cola, blue curaçao.",
+   "price": "650 DA",
+   "img": "img/black-sea.jpg"
+  },
+  {
+   "id": "bleu-ocean",
+   "section": "mocktails",
+   "name_fr": "Bleu ocean",
+   "name_en": "Bleu ocean",
+   "desc_fr": "Sprite.",
+   "desc_en": "Sprite.",
+   "price": "550 DA",
+   "img": "img/bleu-ocean.jpg"
+  },
+  {
+   "id": "pina-colada",
+   "section": "mocktails",
+   "name_fr": "Pina colada",
+   "name_en": "Pina colada",
+   "desc_fr": "Coco, lait, ananas.",
+   "desc_en": "Coconut, milk, pineapple.",
+   "price": "650 DA",
+   "img": "img/pina-colada.jpg"
+  },
+  {
+   "id": "chili-thai-breeze",
+   "section": "mocktails",
+   "name_fr": "Chili thai breeze",
+   "name_en": "Chili thai breeze",
+   "desc_fr": "Tabasco, orange.",
+   "desc_en": "Tabasco, orange.",
+   "price": "500 DA",
+   "img": "img/chili-thai-breeze.jpg"
+  },
+  {
+   "id": "secret-garden",
+   "section": "mocktails",
+   "name_fr": "Secret garden",
+   "name_en": "Secret garden",
+   "desc_fr": "Pêche, gingembre, eau gazeuse.",
+   "desc_en": "Peach, ginger, sparkling water.",
+   "price": "600 DA",
+   "img": "https://tablebeep.com/public-image.php?id=5291"
+  },
+  {
+   "id": "cherry-spark",
+   "section": "mocktails",
+   "name_fr": "Cherry Spark",
+   "name_en": "Cherry Spark",
+   "desc_fr": "Cerise, ananas.",
+   "desc_en": "Cherry, pineapple.",
+   "price": "650 DA",
+   "img": "https://tablebeep.com/public-image.php?id=5292"
+  },
+  {
+   "id": "marguarita",
+   "section": "mocktails",
+   "name_fr": "Marguarita",
+   "name_en": "Marguarita",
+   "desc_fr": "Orange, citron.",
+   "desc_en": "Orange, lemon.",
+   "price": "500 DA",
+   "img": "https://tablebeep.com/public-image.php?id=5293"
+  },
+  {
+   "id": "classic-matcha-latte",
+   "section": "hot",
+   "name_fr": "Classic Matcha latte",
+   "name_en": "Classic Matcha latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/classic-matcha-latte.jpg"
+  },
+  {
+   "id": "classic-ube-latte",
+   "section": "hot",
+   "name_fr": "Classic ube latte",
+   "name_en": "Classic ube latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": null
+  },
+  {
+   "id": "cafe-caps-lor-nespresso",
+   "section": "hot",
+   "name_fr": "Cafe caps l'or / Nespresso",
+   "name_en": "Coffee capsule — L'Or / Nespresso",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "300 DA",
+   "img": "img/cafe-caps-lor-nespresso.jpg"
+  },
+  {
+   "id": "espresso-macchiato",
+   "section": "hot",
+   "name_fr": "Espresso macchiato",
+   "name_en": "Espresso macchiato",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "350 DA",
+   "img": "img/espresso-macchiato.jpg"
+  },
+  {
+   "id": "cafe-americano",
+   "section": "hot",
+   "name_fr": "Cafe américano",
+   "name_en": "Americano",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/cafe-americano.jpg"
+  },
+  {
+   "id": "barraquito-coffee",
+   "section": "hot",
+   "name_fr": "Barraquito coffee",
+   "name_en": "Barraquito coffee",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/barraquito-coffee.jpg"
+  },
+  {
+   "id": "lait-chaud",
+   "section": "hot",
+   "name_fr": "Lait chaud",
+   "name_en": "Hot milk",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "150 DA",
+   "img": "img/lait-chaud.jpg"
+  },
+  {
+   "id": "cafe-au-lait",
+   "section": "hot",
+   "name_fr": "Café au lait",
+   "name_en": "Café au lait",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/cafe-au-lait.jpg"
+  },
+  {
+   "id": "flat-white",
+   "section": "hot",
+   "name_fr": "Flat white",
+   "name_en": "Flat white",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "450 DA",
+   "img": "img/flat-white.jpg"
+  },
+  {
+   "id": "cortado",
+   "section": "hot",
+   "name_fr": "Cortado",
+   "name_en": "Cortado",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "450 DA",
+   "img": "img/cortado.jpg"
+  },
+  {
+   "id": "cappuccino-classique",
+   "section": "hot",
+   "name_fr": "Cappuccino classique",
+   "name_en": "Classic cappuccino",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "550 DA",
+   "img": "img/cappuccino-classique.jpg"
+  },
+  {
+   "id": "cappuccino-brulee",
+   "section": "hot",
+   "name_fr": "Cappuccino brûlée",
+   "name_en": "Cappuccino brûlée",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/cappuccino-brulee.jpg"
+  },
+  {
+   "id": "cappuccino-marshmallow",
+   "section": "hot",
+   "name_fr": "Cappuccino marshmallow",
+   "name_en": "Cappuccino marshmallow",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "650 DA",
+   "img": "img/cappuccino-marshmallow.jpg"
+  },
+  {
+   "id": "cafe-bonbon",
+   "section": "hot",
+   "name_fr": "Café bonbon",
+   "name_en": "Café bonbon",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/cafe-bonbon.jpg"
+  },
+  {
+   "id": "cafe-latte",
+   "section": "hot",
+   "name_fr": "Cafe latte",
+   "name_en": "Cafe latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/cafe-latte.jpg"
+  },
+  {
+   "id": "latte-macchiato-2",
+   "section": "hot",
+   "name_fr": "Latte macchiato",
+   "name_en": "Latte macchiato",
+   "desc_fr": "Caramel / vanille / noisette.",
+   "desc_en": "Caramel / vanilla / hazelnut.",
+   "price": "600 DA",
+   "img": "img/latte-macchiato-2.jpg"
+  },
+  {
+   "id": "cinnamon-latte",
+   "section": "hot",
+   "name_fr": "Cinnamon latte",
+   "name_en": "Cinnamon latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "550 DA",
+   "img": "img/cinnamon-latte.jpg"
+  },
+  {
+   "id": "spanish-latte",
+   "section": "hot",
+   "name_fr": "Spanish latte",
+   "name_en": "Spanish latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/spanish-latte.jpg"
+  },
+  {
+   "id": "moccachino",
+   "section": "hot",
+   "name_fr": "Moccachino",
+   "name_en": "Moccachino",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "550 DA",
+   "img": "img/moccachino.jpg"
+  },
+  {
+   "id": "chocolat-au-lait",
+   "section": "hot",
+   "name_fr": "Chocolat au lait",
+   "name_en": "Chocolate milk",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "350 DA",
+   "img": "img/chocolat-au-lait.jpg"
+  },
+  {
+   "id": "chocolat-chaud",
+   "section": "hot",
+   "name_fr": "Chocolat chaud",
+   "name_en": "Hot chocolate",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "650 DA",
+   "img": "img/chocolat-chaud.jpg"
+  },
+  {
+   "id": "mojito-classic",
+   "section": "mojito",
+   "name_fr": "Mojito classic",
+   "name_en": "Classic mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "550 DA",
+   "img": "img/mojito-classic.jpg"
+  },
+  {
+   "id": "fruit-de-bois",
+   "section": "mojito",
+   "name_fr": "Fruit de bois",
+   "name_en": "Forest fruits",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "700 DA",
+   "img": "img/fruit-de-bois.jpg"
+  },
+  {
+   "id": "black-mojito",
+   "section": "mojito",
+   "name_fr": "Black mojito",
+   "name_en": "Black mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/black-mojito.jpg"
+  },
+  {
+   "id": "mojito-ananas",
+   "section": "mojito",
+   "name_fr": "Mojito ananas",
+   "name_en": "Pineapple mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/mojito-ananas.jpg"
+  },
+  {
+   "id": "mojito-fraise",
+   "section": "mojito",
+   "name_fr": "Mojito fraise",
+   "name_en": "Strawberry mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "650 DA",
+   "img": "img/mojito-fraise.jpg"
+  },
+  {
+   "id": "mojito-fruit-rouge",
+   "section": "mojito",
+   "name_fr": "Mojito fruit rouge",
+   "name_en": "Red berry mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "700 DA",
+   "img": "img/mojito-fruit-rouge.jpg"
+  },
+  {
+   "id": "mojito-kiwi",
+   "section": "mojito",
+   "name_fr": "Mojito kiwi",
+   "name_en": "Kiwi mojito",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "800 DA",
+   "img": "img/mojito-kiwi.jpg"
+  },
+  {
+   "id": "frap-pistache",
+   "section": "frap",
+   "name_fr": "Pistache",
+   "name_en": "Pistachio",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-pistache.jpg"
+  },
+  {
+   "id": "frap-oreo",
+   "section": "frap",
+   "name_fr": "Oreo",
+   "name_en": "Oreo",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-oreo.jpg"
+  },
+  {
+   "id": "frap-chocolat",
+   "section": "frap",
+   "name_fr": "Chocolat",
+   "name_en": "Chocolate",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-chocolat.jpg"
+  },
+  {
+   "id": "frap-caramel",
+   "section": "frap",
+   "name_fr": "Caramel beurre salé",
+   "name_en": "Salted butter caramel",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-caramel.jpg"
+  },
+  {
+   "id": "frap-vanille",
+   "section": "frap",
+   "name_fr": "Vanille",
+   "name_en": "Vanilla",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-vanille.jpg"
+  },
+  {
+   "id": "frap-yaourt",
+   "section": "frap",
+   "name_fr": "Yaourt",
+   "name_en": "Yogurt",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/frap-yaourt.jpg"
+  },
+  {
+   "id": "milk-bueno",
+   "section": "milk",
+   "name_fr": "Bueno",
+   "name_en": "Bueno",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "950 DA",
+   "img": "img/milk-bueno.jpg"
+  },
+  {
+   "id": "milk-lotus",
+   "section": "milk",
+   "name_fr": "Lotus",
+   "name_en": "Lotus",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "800 DA",
+   "img": "img/milk-lotus.jpg"
+  },
+  {
+   "id": "milk-chocolat",
+   "section": "milk",
+   "name_fr": "Chocolat",
+   "name_en": "Chocolate",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/milk-chocolat.jpg"
+  },
+  {
+   "id": "milk-chocolat-banane",
+   "section": "milk",
+   "name_fr": "Chocolat banane",
+   "name_en": "Chocolate banana",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/milk-chocolat-banane.jpg"
+  },
+  {
+   "id": "milk-vanille",
+   "section": "milk",
+   "name_fr": "Vanille",
+   "name_en": "Vanilla",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/milk-vanille.jpg"
+  },
+  {
+   "id": "milk-pistache",
+   "section": "milk",
+   "name_fr": "Pistache",
+   "name_en": "Pistachio",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "800 DA",
+   "img": "img/milk-pistache.jpg"
+  },
+  {
+   "id": "vitamine-lopez",
+   "section": "jus",
+   "name_fr": "Vitamine lopez",
+   "name_en": "Vitamine Lopez",
+   "desc_fr": "Banane, datte, fruit sec, miel.",
+   "desc_en": "Banana, date, dried fruit, honey.",
+   "price": "1,200 DA",
+   "img": "img/vitamine-lopez.jpg"
+  },
+  {
+   "id": "jus-avocat",
+   "section": "jus",
+   "name_fr": "Avocat",
+   "name_en": "Avocado",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/jus-avocat.jpg"
+  },
+  {
+   "id": "jus-orange",
+   "section": "jus",
+   "name_fr": "Orange",
+   "name_en": "Orange",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/jus-orange.jpg"
+  },
+  {
+   "id": "jus-citron",
+   "section": "jus",
+   "name_fr": "Citron",
+   "name_en": "Lemon",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "500 DA",
+   "img": "img/jus-citron.jpg"
+  },
+  {
+   "id": "jus-citron-menthe",
+   "section": "jus",
+   "name_fr": "Citron menthe",
+   "name_en": "Lemon mint",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/jus-citron-menthe.jpg"
+  },
+  {
+   "id": "jus-detox",
+   "section": "jus",
+   "name_fr": "Detox",
+   "name_en": "Detox",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "800 DA",
+   "img": "img/jus-detox.jpg"
+  },
+  {
+   "id": "jus-banane",
+   "section": "jus",
+   "name_fr": "Banane",
+   "name_en": "Banana",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/jus-banane.jpg"
+  },
+  {
+   "id": "jus-ananas",
+   "section": "jus",
+   "name_fr": "Ananas",
+   "name_en": "Pineapple",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "500 DA",
+   "img": "img/jus-ananas.jpg"
+  },
+  {
+   "id": "jus-mangue",
+   "section": "jus",
+   "name_fr": "Mangue",
+   "name_en": "Mango",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,100 DA",
+   "img": "img/jus-mangue.jpg"
+  },
+  {
+   "id": "jus-fraise",
+   "section": "jus",
+   "name_fr": "Fraise",
+   "name_en": "Strawberry",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "650 DA",
+   "img": "img/jus-fraise.jpg"
+  },
+  {
+   "id": "jus-cocktail",
+   "section": "jus",
+   "name_fr": "Cocktail",
+   "name_en": "Cocktail",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "700 DA",
+   "img": "img/jus-cocktail.jpg"
+  },
+  {
+   "id": "smoothie-fraise",
+   "section": "smoothies",
+   "name_fr": "Fraise",
+   "name_en": "Strawberry",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "700 DA",
+   "img": null
+  },
+  {
+   "id": "smoothie-mangue-ananas",
+   "section": "smoothies",
+   "name_fr": "Mangue ananas",
+   "name_en": "Mango pineapple",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": null
+  },
+  {
+   "id": "ice-matcha",
+   "section": "cold",
+   "name_fr": "Ice matcha",
+   "name_en": "Ice matcha",
+   "desc_fr": "Mangue / fruit rouge / fraise.",
+   "desc_en": "Mango / red berries / strawberry.",
+   "price": "850 DA",
+   "img": "img/ice-matcha.jpg"
+  },
+  {
+   "id": "affogato",
+   "section": "cold",
+   "name_fr": "Affogato",
+   "name_en": "Affogato",
+   "desc_fr": "Glace au choix vanille / chocolat.",
+   "desc_en": "Choice of vanilla or chocolate ice cream.",
+   "price": "650 DA",
+   "img": "img/affogato.jpg"
+  },
+  {
+   "id": "ice-americano",
+   "section": "cold",
+   "name_fr": "Ice américano",
+   "name_en": "Iced americano",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "400 DA",
+   "img": "img/ice-americano.jpg"
+  },
+  {
+   "id": "ice-tea",
+   "section": "cold",
+   "name_fr": "Ice tea",
+   "name_en": "Iced tea",
+   "desc_fr": "Pêche / citron / fraise / caramel / vanille / noisette.",
+   "desc_en": "Peach / lemon / strawberry / caramel / vanilla / hazelnut.",
+   "price": "550 DA",
+   "img": "img/ice-tea.jpg"
+  },
+  {
+   "id": "ice-latte",
+   "section": "cold",
+   "name_fr": "Ice latte",
+   "name_en": "Iced latte",
+   "desc_fr": "Caramel / vanille / noisette / cannelle.",
+   "desc_en": "Caramel / vanilla / hazelnut / cinnamon.",
+   "price": "600 DA",
+   "img": "img/ice-latte.jpg"
+  },
+  {
+   "id": "ice-spanish-latte",
+   "section": "cold",
+   "name_fr": "Ice spanish latte",
+   "name_en": "Iced Spanish latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "550 DA",
+   "img": "img/ice-spanish-latte.jpg"
+  },
+  {
+   "id": "pistachio-latte",
+   "section": "cold",
+   "name_fr": "Pistachio latte",
+   "name_en": "Pistachio latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/pistachio-latte.jpg"
+  },
+  {
+   "id": "vampire-kiss-latte",
+   "section": "cold",
+   "name_fr": "Vampire's kiss latte",
+   "name_en": "Vampire's kiss latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "600 DA",
+   "img": "img/vampire-kiss-latte.jpg"
+  },
+  {
+   "id": "blue-espresso-latte",
+   "section": "cold",
+   "name_fr": "Blue espresso latte",
+   "name_en": "Blue espresso latte",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "650 DA",
+   "img": "img/blue-espresso-latte.jpg"
+  },
+  {
+   "id": "salade-burrata",
+   "section": "salades",
+   "name_fr": "Salade Burrata",
+   "name_en": "Burrata salad",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,500 DA",
+   "img": "img/salade-burrata.jpg"
+  },
+  {
+   "id": "salade-cesar",
+   "section": "salades",
+   "name_fr": "Salade César",
+   "name_en": "Caesar salad",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "850 DA",
+   "img": "img/salade-cesar.jpg"
+  },
+  {
+   "id": "gauffre-pistache",
+   "section": "gauffres",
+   "name_fr": "Gauffre pistache",
+   "name_en": "Pistachio waffle",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,450 DA",
+   "img": "img/gauffre-pistache.jpg"
+  },
+  {
+   "id": "gauffre-chocolat",
+   "section": "gauffres",
+   "name_fr": "Gauffre chocolat",
+   "name_en": "Chocolate waffle",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/gauffre-chocolat.jpg"
+  },
+  {
+   "id": "pancake-chocolat",
+   "section": "pancakes",
+   "name_fr": "Pancake au chocolat",
+   "name_en": "Chocolate pancake",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/pancake-chocolat.jpg"
+  },
+  {
+   "id": "san-sebastian",
+   "section": "crepes",
+   "name_fr": "San Sebastian",
+   "name_en": "San Sebastian",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "Prix sur place",
+   "img": "img/san-sebastian.jpg"
+  },
+  {
+   "id": "crepe-pistache",
+   "section": "crepes",
+   "name_fr": "Crêpe au pistache",
+   "name_en": "Pistachio crêpe",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "950 DA",
+   "img": "img/crepe-pistache.jpg"
+  },
+  {
+   "id": "crepe-chocolat",
+   "section": "crepes",
+   "name_fr": "Crêpe au chocolat",
+   "name_en": "Chocolate crêpe",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "750 DA",
+   "img": "img/crepe-chocolat.jpg"
+  },
+  {
+   "id": "chocolate-fondant",
+   "section": "crepes",
+   "name_fr": "Chocolate Fondant",
+   "name_en": "Chocolate fondant",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "Prix sur place",
+   "img": "img/chocolate-fondant.jpg"
+  },
+  {
+   "id": "burger-meat",
+   "section": "burgers",
+   "name_fr": "Burger meat",
+   "name_en": "Burger meat",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/burger-meat.jpg"
+  },
+  {
+   "id": "crispy-burger",
+   "section": "burgers",
+   "name_fr": "Crispy burger",
+   "name_en": "Crispy burger",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "950 DA",
+   "img": "img/crispy-burger.jpg"
+  },
+  {
+   "id": "pain-perdu-fruits-rouges",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu aux fruits rouges",
+   "name_en": "Red berry French toast",
+   "desc_fr": "Brioche maison, sauce fruits rouges, crème à la vanille maison.",
+   "desc_en": "Homemade brioche, red berry sauce, homemade vanilla cream.",
+   "price": "1,900 DA",
+   "img": "img/pain-perdu-fruits-rouges.jpg"
+  },
+  {
+   "id": "pain-perdu-tiramisu",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu tiramisu",
+   "name_en": "Tiramisu French toast",
+   "desc_fr": "Brioche maison, sauce café, cacao, chantilly mascarpone.",
+   "desc_en": "Homemade brioche, coffee sauce, cocoa, mascarpone whipped cream.",
+   "price": "1,500 DA",
+   "img": "img/pain-perdu-tiramisu.jpg"
+  },
+  {
+   "id": "toffee-datte",
+   "section": "painsperdus",
+   "name_fr": "Toffee datte",
+   "name_en": "Sticky toffee date pudding",
+   "desc_fr": "Pudding aux dattes, sauce toffee, boule de glace vanille, noix.",
+   "desc_en": "Date pudding, toffee sauce, scoop of vanilla ice cream, walnuts.",
+   "price": "1,450 DA",
+   "img": "img/toffee-datte.jpg"
+  },
+  {
+   "id": "pain-perdu-caramel-banane",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu caramel banane",
+   "name_en": "Banana caramel French toast",
+   "desc_fr": "Brioche maison, caramel beurre salé, banane caramélisée, noisettes concassées, boule de glace vanille.",
+   "desc_en": "Homemade brioche, salted butter caramel, caramelised banana, crushed hazelnuts, scoop of vanilla ice cream.",
+   "price": "1,400 DA",
+   "img": "img/pain-perdu-caramel-banane.jpg"
+  },
+  {
+   "id": "fondant-chocolat",
+   "section": "painsperdus",
+   "name_fr": "Fondant au chocolat",
+   "name_en": "Chocolate fondant",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/fondant-chocolat.jpg"
+  },
+  {
+   "id": "pain-perdu-peche",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu pêche",
+   "name_en": "Peach French toast",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,400 DA",
+   "img": "img/pain-perdu-peche.jpg"
+  },
+  {
+   "id": "pain-perdu-figues",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu figues",
+   "name_en": "Fig French toast",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,400 DA",
+   "img": "img/pain-perdu-figues.jpg"
+  },
+  {
+   "id": "pain-perdu-pommes-cannelle",
+   "section": "painsperdus",
+   "name_fr": "Pain perdu pommes & cannelle",
+   "name_en": "Apple & cinnamon French toast",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,400 DA",
+   "img": "img/pain-perdu-pommes-cannelle.jpg"
+  },
+  {
+   "id": "tagliatelle-4-fromages",
+   "section": "pasta",
+   "name_fr": "Tagliatelle quatre fromages",
+   "name_en": "Four-cheese tagliatelle",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "950 DA",
+   "img": "img/tagliatelle-4-fromages.jpg"
+  },
+  {
+   "id": "penne-bolognaise",
+   "section": "pasta",
+   "name_fr": "Penne sauce bolognaise",
+   "name_en": "Penne bolognese",
+   "desc_fr": "",
+   "desc_en": "",
+   "price": "1,200 DA",
+   "img": "img/penne-bolognaise.jpg"
+  }
+ ]
+}

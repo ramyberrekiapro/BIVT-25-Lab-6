@@ -1,16 +1,21 @@
-LOPEZ MENU - HOW TO PUBLISH (customer messages, admin panel, public like counts)
-=================================================================================
+LOPEZ MENU - HOW TO PUBLISH (menu, owner's page, messages, likes)
+===================================================================
 
 Folder contents
-  public/                  the website (menu = index.html, admin panel = admin/index.html)
-  functions/api/messages.js  server part that receives and stores customer messages
-  functions/api/likes.js     server part that counts likes for every menu item
-  HOW-TO-PUBLISH.txt       this file
+  public/                    the website: menu (index.html), owner's page (admin/), photos (img/),
+                             menu-data.json (the original menu, used by the owner's page)
+  functions/api/messages.js  server part: customer messages
+  functions/api/likes.js     server part: like counts
+  functions/api/menu.js      server part: the owner's menu changes (names, prices, photos, ...)
+  functions/api/photo.js     server part: photos uploaded on the owner's page
+  lib/admin.js               owner password check, shared by the server parts
+  tools/build.py             used when the built-in menu is rebuilt (you don't need to run it)
+  HOW-TO-PUBLISH.txt         this file
 
 IMPORTANT: from now on, publish with the Terminal command in step 4.
 Dragging the folder into the Cloudflare dashboard uploads only the website,
 not the functions/ folder: the message form then shows "Sending failed"
-and the like numbers disappear (hearts still work, but only on each phone).
+the like numbers disappear, and changes made on the owner's page do not show.
 
 
 ONE-TIME SETUP (about 10 minutes)
@@ -21,7 +26,7 @@ ONE-TIME SETUP (about 10 minutes)
 
 2. Create the storage (Cloudflare dashboard)
    a) Messages: Storage & Databases -> KV -> Create -> name it: lopez-messages -> Create.
-   b) Likes:    Storage & Databases -> D1 SQL Database -> Create -> name it: lopez-likes -> Create.
+   b) Likes + menu changes: Storage & Databases -> D1 SQL Database -> Create -> name it: lopez-likes -> Create.
       (No tables to set up: the site creates them itself on first use.)
 
 3. Connect storage + set your admin password (Cloudflare dashboard)
@@ -64,8 +69,22 @@ Menu:         https://lopez-menu.pages.dev
 Admin panel:  https://lopez-menu.pages.dev/admin/
               (not linked anywhere on the menu; search engines are told not to index it)
 
-In the admin panel: sign in with ADMIN_PASSWORD, then read, mark read/unread, or delete messages.
-New messages have a terracotta bar and a "Nouveau / New" label. Tap "Actualiser / Refresh" to check again.
+Owner's page (/admin/): sign in with ADMIN_PASSWORD. Three tabs:
+
+  Messages  - read, mark read/unread, or delete customer messages. New ones have a terracotta
+              bar and a "Nouveau / New" label; the tab shows how many are unread.
+  Menu      - every item, grouped by category, with its price and number of likes.
+              "Modifier / Edit" on an item: change the French and English name and description,
+              the price, the photo (taken or chosen on the phone; it is resized automatically),
+              or untick "Visible" to hide it (e.g. sold out). "Enregistrer / Save" to publish.
+              "Rétablir l'original / Undo all changes" puts an item back as it was.
+              "+ Ajouter / Add" in a category adds a new item; "Supprimer l'article" removes it.
+              Changes show on the menu a few seconds after saving - no need to publish again.
+  J'aime    - every item ranked by likes, with the total.
+
+Your changes are stored in the D1 database, not in the files: they stay when the site is
+published again. If Claude later updates an item in the files, your own change to that item
+(e.g. your price) still wins; use "Undo all changes" on it to see the new built-in version.
 
 Limits and behaviour
   - Free plan: about 500 new messages per day (KV allows 1,000 writes/day), far more than needed.

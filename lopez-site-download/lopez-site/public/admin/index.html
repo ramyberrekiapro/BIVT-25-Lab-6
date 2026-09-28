@@ -4,68 +4,176 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Lopez — Admin</title>
+<title>Lopez — Espace propriétaire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#F7EFE6; --dark:#2B211C; --gold:#C9A85D; --accent:#C56B4B; --card:#FFFDF8;
-    --ink:#2B211C; --muted:#75675D; --btn:#7A8B72; --line:rgba(43,33,28,.12);
+    --ink:#2B211C; --muted:#75675D; --btn:#7A8B72; --line:rgba(43,33,28,.12); --ok:#56704c;
   }
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased;}
-  header{background:var(--dark); color:var(--bg); border-bottom:4px solid var(--gold); padding:calc(18px + env(safe-area-inset-top,0px)) 16px 18px;}
-  header .in{max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  header{background:var(--dark); color:var(--bg); border-bottom:4px solid var(--gold); padding:calc(18px + env(safe-area-inset-top,0px)) 16px 0;}
+  header .in{max-width:820px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding-bottom:14px;}
   h1{font-family:'Playfair Display',serif; font-size:1.4rem; margin:0;}
   h1 small{font-family:'DM Sans',sans-serif; font-weight:500; font-size:.8rem; opacity:.7; margin-left:6px;}
-  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+  .tabs{max-width:820px; margin:0 auto; display:flex; gap:4px; overflow-x:auto;}
+  .tabs button{background:transparent; border:none; border-radius:10px 10px 0 0; color:var(--bg); opacity:.7; padding:10px 14px; font:600 .88rem 'DM Sans',sans-serif; white-space:nowrap;}
+  .tabs button[aria-selected="true"]{background:var(--bg); color:var(--ink); opacity:1;}
+  .tabs .pill{background:var(--accent); color:#fff; border-radius:999px; padding:0 7px; font-size:.72rem; margin-left:4px;}
+  main{max-width:820px; margin:0 auto; padding:20px 16px 80px;}
   button{font:600 .85rem 'DM Sans',sans-serif; border-radius:999px; padding:9px 16px; cursor:pointer; border:1px solid var(--btn); background:var(--btn); color:#fff;}
   button.ghost{background:transparent; color:inherit; border-color:currentColor; opacity:.85;}
   button.danger{background:transparent; color:var(--accent); border-color:var(--accent);}
+  button.small{padding:6px 12px; font-size:.78rem;}
   button:disabled{opacity:.5; cursor:default;}
+  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
   .login{max-width:360px; margin:40px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px;}
-  .login label{display:block; font-size:.85rem; color:var(--muted); margin-bottom:6px;}
-  input{width:100%; font:1rem 'DM Sans',sans-serif; padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
-  input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  label.f{display:block; font-size:.82rem; color:var(--muted); margin-bottom:5px;}
+  input[type=text], input[type=password], input[type=search], textarea{width:100%; font:16px 'DM Sans',sans-serif; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
+  textarea{resize:vertical; min-height:64px;}
   .err{color:var(--accent); font-size:.85rem; min-height:1.2em; margin:4px 0 0;}
+  .note{color:var(--muted); font-size:.82rem; margin:0 0 14px;}
   .bar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
   .count{color:var(--muted); font-size:.9rem;}
+  .empty{text-align:center; color:var(--muted); padding:40px 0;}
+
+  /* messages */
   .msg{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px;}
   .msg.unread{border-left-color:var(--accent);}
   .meta{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.8rem; color:var(--muted); margin-bottom:8px;}
   .who{font-weight:600; color:var(--ink);}
-  .badge{background:var(--accent); color:#fff; border-radius:999px; padding:1px 8px; font-size:.7rem; font-weight:600;}
+  .badge{border-radius:999px; padding:1px 8px; font-size:.7rem; font-weight:600; background:var(--accent); color:#fff;}
+  .badge.soft{background:rgba(43,33,28,.08); color:var(--muted);}
+  .badge.new{background:var(--btn);}
   .text{white-space:pre-wrap; word-wrap:break-word; line-height:1.5; margin:0 0 12px;}
   .actions{display:flex; gap:8px; flex-wrap:wrap;}
-  .actions button{padding:6px 12px; font-size:.78rem;}
-  .empty{text-align:center; color:var(--muted); padding:40px 0;}
-  a{color:var(--accent);}
+
+  /* menu */
+  .sec{margin-bottom:26px;}
+  .sec-head{display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:2px solid var(--gold); padding-bottom:8px; margin-bottom:8px;}
+  .sec-head h2{font-family:'Playfair Display',serif; color:var(--accent); font-size:1.2rem; margin:0;}
+  .row{display:grid; grid-template-columns:56px 1fr auto; gap:12px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin-bottom:8px;}
+  .row.is-hidden{opacity:.55;}
+  .thumb{width:56px; height:56px; border-radius:8px; background:var(--bg); object-fit:contain; display:block;}
+  .thumb.none{display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.65rem; text-align:center;}
+  .row .nm{font-weight:600; line-height:1.25;}
+  .row .sub{font-size:.8rem; color:var(--muted); margin-top:2px; display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center;}
+  .row .price{color:var(--accent); font-weight:600;}
+  .heart{color:var(--accent); font-variant-numeric:tabular-nums;}
+
+  /* editor */
+  .overlay{position:fixed; inset:0; background:rgba(20,10,5,.55); display:flex; align-items:flex-end; justify-content:center; z-index:50; padding:env(safe-area-inset-top,0px) 0 0;}
+  .overlay[hidden]{display:none;}
+  .sheet{background:var(--bg); width:100%; max-width:560px; max-height:92vh; overflow-y:auto; border-radius:16px 16px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));}
+  @media (min-width:600px){ .overlay{align-items:center;} .sheet{border-radius:16px;} }
+  .sheet h3{font-family:'Playfair Display',serif; margin:0 0 4px; font-size:1.25rem;}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:0 12px;}
+  @media (max-width:480px){ .two{grid-template-columns:1fr;} }
+  .photo-box{display:flex; gap:12px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
+  .photo-box img, .photo-box .thumb{width:96px; height:96px;}
+  .check{display:flex; align-items:center; gap:8px; margin:4px 0 16px; font-size:.92rem;}
+  .check input{width:20px; height:20px; accent-color:var(--btn);}
+  .sheet .actions{justify-content:space-between; margin-top:6px;}
+  .file-btn{position:relative; overflow:hidden; display:inline-block;}
+  .file-btn input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+  .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--dark); color:var(--bg); padding:10px 18px; border-radius:999px; font-size:.85rem; z-index:60;}
+  .toast[hidden]{display:none;}
+
+  /* likes */
+  .rank{display:grid; grid-template-columns:28px 44px 1fr auto; gap:10px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin-bottom:6px;}
+  .rank .n{color:var(--muted); font-variant-numeric:tabular-nums; text-align:right;}
+  .rank .thumb{width:44px; height:44px;}
+  .rank .meter{height:6px; background:rgba(43,33,28,.08); border-radius:3px; margin-top:5px; overflow:hidden;}
+  .rank .meter i{display:block; height:100%; background:var(--accent);}
+  .rank .cnt{font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums; min-width:3ch; text-align:right;}
+  .stats{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px;}
+  .stat b{display:block; font-size:1.3rem; font-variant-numeric:tabular-nums;}
+  .stat span{font-size:.78rem; color:var(--muted);}
 </style>
 </head>
 <body>
-<header><div class="in">
-  <h1>Lopez <small>Messages</small></h1>
-  <button class="ghost" id="logout" hidden>Déconnexion / Log out</button>
-</div></header>
+<header>
+  <div class="in">
+    <h1>Lopez <small>Espace propriétaire / Owner</small></h1>
+    <button class="ghost small" id="logout" hidden>Déconnexion / Log out</button>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" hidden>
+    <button role="tab" data-tab="messages" aria-selected="true">Messages<span class="pill" id="unreadPill" hidden></span></button>
+    <button role="tab" data-tab="menu" aria-selected="false">Menu</button>
+    <button role="tab" data-tab="likes" aria-selected="false">J’aime / Likes</button>
+  </nav>
+</header>
 
 <main>
   <form class="login" id="login">
-    <label for="pw">Mot de passe admin / Admin password</label>
+    <label class="f" for="pw">Mot de passe admin / Admin password</label>
     <input type="password" id="pw" autocomplete="current-password" required>
     <button type="submit" style="width:100%">Entrer / Sign in</button>
     <p class="err" id="loginErr"></p>
   </form>
 
-  <section id="panel" hidden>
+  <section id="tab-messages" hidden>
     <div class="bar">
       <span class="count" id="count"></span>
-      <button id="refresh">Actualiser / Refresh</button>
+      <button class="small" id="refresh">Actualiser / Refresh</button>
     </div>
     <p class="err" id="panelErr"></p>
     <div id="list"></div>
   </section>
+
+  <section id="tab-menu" hidden>
+    <p class="note">Les changements apparaissent sur le menu en ligne quelques secondes après l’enregistrement. / Changes show on the live menu a few seconds after saving.</p>
+    <input type="search" id="menuSearch" placeholder="Rechercher un article / Search an item">
+    <p class="err" id="menuErr"></p>
+    <div id="menuList"></div>
+  </section>
+
+  <section id="tab-likes" hidden>
+    <div class="stats" id="likeStats"></div>
+    <div id="likeList"></div>
+  </section>
 </main>
+
+<div class="overlay" id="editor" hidden>
+  <form class="sheet" id="editForm" novalidate>
+    <h3 id="edTitle">Modifier</h3>
+    <p class="note" id="edSection"></p>
+
+    <div class="photo-box">
+      <div id="edPhoto"></div>
+      <div class="actions">
+        <span class="file-btn"><button type="button" class="small">Changer la photo / Change photo</button><input type="file" id="edFile" accept="image/*"></span>
+        <button type="button" class="small ghost" id="edPhotoReset" hidden>Photo d’origine / Original photo</button>
+      </div>
+    </div>
+
+    <div class="two">
+      <div><label class="f" for="edNameFr">Nom (français)</label><input type="text" id="edNameFr" maxlength="80"></div>
+      <div><label class="f" for="edNameEn">Name (English)</label><input type="text" id="edNameEn" maxlength="80"></div>
+    </div>
+    <div class="two">
+      <div><label class="f" for="edDescFr">Description (français)</label><textarea id="edDescFr" maxlength="400" rows="3"></textarea></div>
+      <div><label class="f" for="edDescEn">Description (English)</label><textarea id="edDescEn" maxlength="400" rows="3"></textarea></div>
+    </div>
+    <label class="f" for="edPrice">Prix / Price <span style="opacity:.8">(ex. 1,200 DA — ou « Prix sur place »)</span></label>
+    <input type="text" id="edPrice" maxlength="30" inputmode="text">
+    <label class="check"><input type="checkbox" id="edVisible"> Visible sur le menu / Shown on the menu</label>
+
+    <p class="err" id="edErr"></p>
+    <div class="actions">
+      <button type="button" class="small danger" id="edReset">Rétablir l’original / Undo all changes</button>
+      <span class="actions">
+        <button type="button" class="small ghost" id="edCancel">Annuler / Cancel</button>
+        <button type="submit" class="small" id="edSave">Enregistrer / Save</button>
+      </span>
+    </div>
+  </form>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <script>
 (function(){
@@ -73,93 +181,285 @@
   var pw = '';
   try{ pw = sessionStorage.getItem(KEY) || ''; }catch(e){}
   var $ = function(id){ return document.getElementById(id); };
+  function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   function api(method, url, body){
     return fetch(url, {
       method: method,
       headers: Object.assign({ 'authorization': 'Bearer ' + pw }, body ? { 'content-type': 'application/json' } : {}),
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
+      cache: 'no-store'
     }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); });
   }
-
   function errText(d){
     if (d._status === 401) return 'Mot de passe incorrect / Wrong password';
     if (d._status === 429) return 'Trop d’essais, réessayez dans 15 min / Too many attempts, try again in 15 min';
     if (d.error === 'storage_not_configured') return 'Stockage KV non configuré (binding MESSAGES) / KV binding MESSAGES missing';
+    if (d.error === 'database_not_configured') return 'Base D1 non configurée (binding DB) / D1 binding DB missing';
     if (d.error === 'ADMIN_PASSWORD is not set') return 'ADMIN_PASSWORD non défini / ADMIN_PASSWORD not set';
+    if (d.error === 'bad_photo') return 'Photo trop lourde ou format non pris en charge / Photo too large or unsupported';
+    if (d.error === 'name_and_section_required') return 'Le nom français est obligatoire / French name is required';
     return 'Erreur / Error (' + (d._status || 'réseau / network') + ')';
   }
+  var toastTimer;
+  function toast(msg){ var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.hidden = true; }, 2200); }
 
+  // ---------------- session / tabs
   function showLogin(msg){
-    $('panel').hidden = true; $('logout').hidden = true; $('login').hidden = false;
+    ['tab-messages','tab-menu','tab-likes'].forEach(function(id){ $(id).hidden = true; });
+    $('tabs').hidden = true; $('logout').hidden = true; $('login').hidden = false;
     $('loginErr').textContent = msg || '';
   }
-
-  function fmtDate(iso){
-    try{ return new Date(iso).toLocaleString('fr-FR', { dateStyle:'medium', timeStyle:'short' }); }catch(e){ return iso; }
+  var currentTab = 'messages';
+  function showTab(name){
+    currentTab = name;
+    document.querySelectorAll('#tabs button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
+    ['messages','menu','likes'].forEach(function(n){ $('tab-' + n).hidden = n !== name; });
+    if (name === 'menu') loadMenu();
+    if (name === 'likes') loadMenu().then(renderLikes);
   }
+  document.querySelectorAll('#tabs button').forEach(function(b){ b.addEventListener('click', function(){ showTab(b.getAttribute('data-tab')); }); });
 
-  function render(msgs, more){
+  // ---------------- messages
+  function fmtDate(iso){ try{ return new Date(iso).toLocaleString('fr-FR', { dateStyle:'medium', timeStyle:'short' }); }catch(e){ return iso; } }
+  function renderMessages(msgs, more){
     var list = $('list'); list.textContent = '';
     var unread = msgs.filter(function(m){ return !m.read; }).length;
+    $('unreadPill').textContent = unread; $('unreadPill').hidden = !unread;
     $('count').textContent = msgs.length + ' message' + (msgs.length === 1 ? '' : 's') + ' · ' + unread + ' non lu' + (unread === 1 ? '' : 's') + ' / unread' + (more ? ' · (200 plus récents / newest 200)' : '');
-    if (!msgs.length){
-      var e = document.createElement('p'); e.className = 'empty'; e.textContent = 'Aucun message pour le moment / No messages yet'; list.appendChild(e); return;
-    }
+    if (!msgs.length){ list.appendChild(el('p', 'empty', 'Aucun message pour le moment / No messages yet')); return; }
     msgs.forEach(function(m){
-      var card = document.createElement('article'); card.className = 'msg' + (m.read ? '' : ' unread');
-      var meta = document.createElement('div'); meta.className = 'meta';
-      var who = document.createElement('span'); who.className = 'who'; who.textContent = m.name || 'Anonyme / Anonymous'; meta.appendChild(who);
-      if (m.contact){ var c = document.createElement('span'); c.textContent = m.contact; meta.appendChild(c); }
-      var d = document.createElement('span'); d.textContent = fmtDate(m.date); meta.appendChild(d);
-      var l = document.createElement('span'); l.textContent = (m.lang || 'fr').toUpperCase(); meta.appendChild(l);
-      if (!m.read){ var b = document.createElement('span'); b.className = 'badge'; b.textContent = 'Nouveau / New'; meta.appendChild(b); }
-      var t = document.createElement('p'); t.className = 'text'; t.textContent = m.message;
-      var act = document.createElement('div'); act.className = 'actions';
-      var rb = document.createElement('button'); rb.className = 'ghost';
-      rb.textContent = m.read ? 'Marquer non lu / Mark unread' : 'Marquer lu / Mark read';
-      rb.onclick = function(){ rb.disabled = true; api('PATCH', '/api/messages?id=' + encodeURIComponent(m.id), { read: !m.read }).then(function(r){ if (r.ok) load(); else { rb.disabled = false; $('panelErr').textContent = errText(r); } }); };
-      var db = document.createElement('button'); db.className = 'danger'; db.textContent = 'Supprimer / Delete';
+      var card = el('article', 'msg' + (m.read ? '' : ' unread'));
+      var meta = el('div', 'meta');
+      meta.appendChild(el('span', 'who', m.name || 'Anonyme / Anonymous'));
+      if (m.contact) meta.appendChild(el('span', '', m.contact));
+      meta.appendChild(el('span', '', fmtDate(m.date)));
+      meta.appendChild(el('span', '', (m.lang || 'fr').toUpperCase()));
+      if (!m.read) meta.appendChild(el('span', 'badge', 'Nouveau / New'));
+      var act = el('div', 'actions');
+      var rb = el('button', 'small ghost', m.read ? 'Marquer non lu / Mark unread' : 'Marquer lu / Mark read');
+      rb.onclick = function(){ rb.disabled = true; api('PATCH', '/api/messages?id=' + encodeURIComponent(m.id), { read: !m.read }).then(function(r){ if (r.ok) loadMessages(); else { rb.disabled = false; $('panelErr').textContent = errText(r); } }); };
+      var db = el('button', 'small danger', 'Supprimer / Delete');
       db.onclick = function(){
         if (!confirm('Supprimer ce message ? / Delete this message?')) return;
         db.disabled = true;
-        api('DELETE', '/api/messages?id=' + encodeURIComponent(m.id)).then(function(r){ if (r.ok) load(); else { db.disabled = false; $('panelErr').textContent = errText(r); } });
+        api('DELETE', '/api/messages?id=' + encodeURIComponent(m.id)).then(function(r){ if (r.ok) loadMessages(); else { db.disabled = false; $('panelErr').textContent = errText(r); } });
       };
       act.appendChild(rb); act.appendChild(db);
-      card.appendChild(meta); card.appendChild(t); card.appendChild(act);
+      card.appendChild(meta); card.appendChild(el('p', 'text', m.message)); card.appendChild(act);
       list.appendChild(card);
     });
   }
-
-  function load(){
-    $('panelErr').textContent = '';
-    $('refresh').disabled = true;
+  function loadMessages(){
+    $('panelErr').textContent = ''; $('refresh').disabled = true;
     return api('GET', '/api/messages').then(function(d){
       $('refresh').disabled = false;
-      if (d._status === 401 || d._status === 429){
-        try{ sessionStorage.removeItem(KEY); }catch(e){}
-        showLogin(errText(d)); return;
-      }
-      if (!d.messages){ $('panelErr').textContent = errText(d); return; }
-      $('login').hidden = true; $('panel').hidden = false; $('logout').hidden = false;
-      render(d.messages, d.more);
-    }).catch(function(){ $('refresh').disabled = false; $('panelErr').textContent = errText({}); });
+      if (d._status === 401 || d._status === 429){ try{ sessionStorage.removeItem(KEY); }catch(e){} showLogin(errText(d)); return false; }
+      if (!d.messages){ $('panelErr').textContent = errText(d); return true; }
+      renderMessages(d.messages, d.more); return true;
+    }).catch(function(){ $('refresh').disabled = false; $('panelErr').textContent = errText({}); return true; });
+  }
+  $('refresh').addEventListener('click', loadMessages);
+
+  // ---------------- menu data
+  var base = null;      // menu-data.json: defaults built into the site
+  var edits = {};       // id -> row from /api/menu
+  var likes = {};       // id -> count
+  function loadMenu(){
+    var p1 = base ? Promise.resolve(base) : fetch('/menu-data.json', { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(d){ base = d; return d; });
+    var p2 = fetch('/api/menu', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : { items: [] , _err: r.status }; });
+    var p3 = fetch('/api/likes', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : { counts: {} }; }).catch(function(){ return { counts: {} }; });
+    return Promise.all([p1, p2, p3]).then(function(res){
+      edits = {}; (res[1].items || []).forEach(function(it){ edits[it.id] = it; });
+      likes = res[2].counts || {};
+      $('menuErr').textContent = res[1]._err ? errText({ _status: res[1]._err, error: res[1]._err === 503 ? 'database_not_configured' : '' }) : '';
+      if (currentTab === 'menu') renderMenu();
+    }).catch(function(){ $('menuErr').textContent = errText({}); });
   }
 
+  // current value of an item = default merged with the owner's edits
+  function current(def, ed){
+    ed = ed || {};
+    function pick(k){ return ed[k] != null ? ed[k] : (def ? def[k] : ''); }
+    return {
+      id: def ? def.id : ed.id, section: def ? def.section : ed.section, isNew: !def,
+      name_fr: pick('name_fr'), name_en: pick('name_en'), desc_fr: pick('desc_fr'), desc_en: pick('desc_en'), price: pick('price'),
+      hidden: !!ed.hidden, img: ed.photo || (def ? def.img : null), customPhoto: !!ed.photo, edited: !!(ed.id && def)
+    };
+  }
+  function allItems(){
+    var out = base.items.map(function(d){ return current(d, edits[d.id]); });
+    Object.keys(edits).forEach(function(id){ if (edits[id].is_new) out.push(current(null, edits[id])); });
+    return out;
+  }
+  function sectionTitle(id){ var s = base.sections.filter(function(x){ return x.id === id; })[0]; return s ? s.title_fr : id; }
+  function thumb(src, cls){
+    if (!src){ return el('div', (cls || 'thumb') + ' none', 'pas de photo'); }
+    var i = el('img', cls || 'thumb'); i.src = /^(https?:|\/|data:)/.test(src) ? src : '/' + src; i.alt = ''; i.loading = 'lazy'; return i;
+  }
+
+  function renderMenu(){
+    if (!base) return;
+    var q = $('menuSearch').value.trim().toLowerCase();
+    var list = $('menuList'); list.textContent = '';
+    var items = allItems();
+    base.sections.forEach(function(sec){
+      var rows = items.filter(function(it){ return it.section === sec.id && (!q || (it.name_fr + ' ' + it.name_en).toLowerCase().indexOf(q) !== -1); });
+      if (q && !rows.length) return;
+      var box = el('div', 'sec');
+      var head = el('div', 'sec-head'); head.appendChild(el('h2', '', sec.title_fr));
+      var add = el('button', 'small ghost', '+ Ajouter / Add'); add.onclick = function(){ openEditor(null, sec.id); };
+      head.appendChild(add); box.appendChild(head);
+      rows.forEach(function(it){
+        var r = el('div', 'row' + (it.hidden ? ' is-hidden' : ''));
+        r.appendChild(thumb(it.img));
+        var mid = el('div');
+        mid.appendChild(el('div', 'nm', it.name_fr));
+        var sub = el('div', 'sub');
+        sub.appendChild(el('span', 'price', it.price));
+        sub.appendChild(el('span', 'heart', '♥ ' + (likes[it.id] || 0)));
+        if (it.hidden) sub.appendChild(el('span', 'badge soft', 'Masqué / Hidden'));
+        if (it.isNew) sub.appendChild(el('span', 'badge new', 'Ajouté / Added'));
+        else if (it.edited) sub.appendChild(el('span', 'badge soft', 'Modifié / Edited'));
+        mid.appendChild(sub); r.appendChild(mid);
+        var b = el('button', 'small', 'Modifier / Edit'); b.onclick = function(){ openEditor(it.id); };
+        r.appendChild(b);
+        box.appendChild(r);
+      });
+      list.appendChild(box);
+    });
+    if (!list.children.length) list.appendChild(el('p', 'empty', 'Aucun article trouvé / No item found'));
+  }
+  $('menuSearch').addEventListener('input', renderMenu);
+
+  // ---------------- editor
+  var ed = { id: null, def: null, section: null, isNew: false, photo: undefined };
+  function defOf(id){ return base.items.filter(function(d){ return d.id === id; })[0] || null; }
+  function showPhoto(src){ var box = $('edPhoto'); box.textContent = ''; box.appendChild(thumb(src)); }
+
+  function openEditor(id, sectionForNew){
+    var def = id ? defOf(id) : null;
+    var it = id ? current(def, edits[id]) : { id: 'new-' + Math.random().toString(16).slice(2, 10), section: sectionForNew, isNew: true,
+      name_fr: '', name_en: '', desc_fr: '', desc_en: '', price: '', hidden: false, img: null, customPhoto: false, edited: false };
+    ed = { id: it.id, def: def, section: it.section, isNew: it.isNew, photo: undefined, current: it };
+    $('edTitle').textContent = it.isNew && !id ? 'Nouvel article / New item' : 'Modifier / Edit — ' + it.name_fr;
+    $('edSection').textContent = 'Catégorie / Category : ' + sectionTitle(it.section) + (id ? '  ·  ♥ ' + (likes[id] || 0) : '');
+    $('edNameFr').value = it.name_fr; $('edNameEn').value = it.name_en;
+    $('edDescFr').value = it.desc_fr; $('edDescEn').value = it.desc_en;
+    $('edPrice').value = it.price; $('edVisible').checked = !it.hidden;
+    showPhoto(it.img);
+    $('edPhotoReset').hidden = !it.customPhoto || !def;
+    $('edReset').hidden = !(it.isNew && id) && !(def && it.edited);
+    $('edReset').textContent = it.isNew ? 'Supprimer l’article / Delete item' : 'Rétablir l’original / Undo all changes';
+    $('edErr').textContent = ''; $('edFile').value = '';
+    $('editor').hidden = false;
+    $('edNameFr').focus();
+  }
+  function closeEditor(){ $('editor').hidden = true; }
+  $('edCancel').addEventListener('click', closeEditor);
+  $('editor').addEventListener('click', function(e){ if (e.target === $('editor')) closeEditor(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
+
+  // resize the chosen photo in the browser (max 1000 px, JPEG) before upload
+  $('edFile').addEventListener('change', function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    $('edErr').textContent = 'Préparation de la photo… / Preparing photo…';
+    var url = URL.createObjectURL(f), img = new Image();
+    img.onload = function(){
+      var MAX = 1000, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, MAX / Math.max(w, h));
+      var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      var q = 0.85, data = c.toDataURL('image/jpeg', q);
+      while (data.length > 850000 && q > 0.4){ q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+      URL.revokeObjectURL(url);
+      ed.photo = data; showPhoto(data); $('edPhotoReset').hidden = !ed.def; $('edErr').textContent = '';
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); $('edErr').textContent = 'Impossible de lire cette photo / Cannot read this photo'; };
+    img.src = url;
+  });
+  $('edPhotoReset').addEventListener('click', function(){ ed.photo = ''; showPhoto(ed.def ? ed.def.img : null); this.hidden = true; });
+
+  $('edReset').addEventListener('click', function(){
+    var msg = ed.isNew ? 'Supprimer cet article du menu ? / Delete this item from the menu?'
+                       : 'Annuler toutes vos modifications de cet article ? / Undo all your changes to this item?';
+    if (!confirm(msg)) return;
+    var btn = this; btn.disabled = true;
+    api('DELETE', '/api/menu?id=' + encodeURIComponent(ed.id)).then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ $('edErr').textContent = errText(r); return; }
+      closeEditor(); toast(ed.isNew ? 'Article supprimé / Item deleted' : 'Original rétabli / Original restored'); loadMenu();
+    });
+  });
+
+  $('editForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = { name_fr: $('edNameFr').value.trim(), name_en: $('edNameEn').value.trim(), desc_fr: $('edDescFr').value.trim(),
+              desc_en: $('edDescEn').value.trim(), price: $('edPrice').value.trim() };
+    if (!v.name_fr){ $('edErr').textContent = 'Le nom français est obligatoire / French name is required'; $('edNameFr').focus(); return; }
+    var body = { id: ed.id, hidden: !$('edVisible').checked };
+    if (ed.isNew){
+      body.is_new = true; body.section = ed.section;
+      Object.keys(v).forEach(function(k){ body[k] = v[k]; });
+    } else {
+      // store only what differs from the original menu
+      Object.keys(v).forEach(function(k){ body[k] = v[k] === (ed.def[k] || '') ? null : v[k]; });
+    }
+    if (ed.photo !== undefined) body.photo = ed.photo;
+    // an original item left exactly as it was: remove its row instead of saving an empty edit
+    var hasCustomPhoto = typeof ed.photo === 'string' ? ed.photo !== '' : ed.current.customPhoto;
+    var nothing = !ed.isNew && !body.hidden && !hasCustomPhoto && Object.keys(v).every(function(k){ return body[k] === null; });
+    var btn = $('edSave'); btn.disabled = true; $('edErr').textContent = 'Enregistrement… / Saving…';
+    var req = nothing ? api('DELETE', '/api/menu?id=' + encodeURIComponent(ed.id)) : api('PUT', '/api/menu', body);
+    req.then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ $('edErr').textContent = errText(r); return; }
+      closeEditor(); toast('Enregistré / Saved'); loadMenu();
+    }).catch(function(){ btn.disabled = false; $('edErr').textContent = errText({}); });
+  });
+
+  // ---------------- likes
+  function renderLikes(){
+    if (!base) return;
+    var items = allItems().filter(function(it){ return !it.hidden; });
+    items.sort(function(a, b){ return (likes[b.id] || 0) - (likes[a.id] || 0) || a.name_fr.localeCompare(b.name_fr); });
+    var total = items.reduce(function(s, it){ return s + (likes[it.id] || 0); }, 0);
+    var liked = items.filter(function(it){ return likes[it.id]; }).length;
+    var max = Math.max(1, likes[items[0] && items[0].id] || 0);
+    var st = $('likeStats'); st.textContent = '';
+    [[total, 'J’aime au total / Total likes'], [liked + ' / ' + items.length, 'Articles aimés / Items liked']].forEach(function(p){
+      var d = el('div', 'stat'); d.appendChild(el('b', '', String(p[0]))); d.appendChild(el('span', '', p[1])); st.appendChild(d);
+    });
+    var list = $('likeList'); list.textContent = '';
+    items.forEach(function(it, i){
+      var r = el('div', 'rank');
+      r.appendChild(el('span', 'n', String(i + 1)));
+      r.appendChild(thumb(it.img));
+      var mid = el('div'); mid.appendChild(el('div', 'nm', it.name_fr));
+      var sub = el('div', 'sub'); sub.style.fontSize = '.78rem'; sub.style.color = 'var(--muted)'; sub.textContent = sectionTitle(it.section); mid.appendChild(sub);
+      var m = el('div', 'meter'); var bar = el('i'); bar.style.width = Math.round(100 * (likes[it.id] || 0) / max) + '%'; m.appendChild(bar); mid.appendChild(m);
+      r.appendChild(mid);
+      r.appendChild(el('span', 'cnt', '♥ ' + (likes[it.id] || 0)));
+      list.appendChild(r);
+    });
+  }
+
+  // ---------------- sign in
+  function enter(){
+    loadMessages().then(function(ok){
+      if (ok === false) return;
+      $('login').hidden = true; $('tabs').hidden = false; $('logout').hidden = false;
+      showTab(currentTab);
+    });
+  }
   $('login').addEventListener('submit', function(e){
     e.preventDefault();
     pw = $('pw').value;
     try{ sessionStorage.setItem(KEY, pw); }catch(err){}
     $('pw').value = '';
-    load();
+    enter();
   });
-  $('refresh').addEventListener('click', load);
-  $('logout').addEventListener('click', function(){
-    pw = ''; try{ sessionStorage.removeItem(KEY); }catch(e){}
-    showLogin('');
-  });
-
-  if (pw) load();
+  $('logout').addEventListener('click', function(){ pw = ''; try{ sessionStorage.removeItem(KEY); }catch(e){} showLogin(''); });
+  if (pw) enter();
 })();
 </script>
 </body>
