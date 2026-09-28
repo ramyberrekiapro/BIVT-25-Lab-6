@@ -1,37 +1,36 @@
-// Customer messages for Lopez.
+// Customer messages for Lopez, stored in D1 (binding DB).
 //   POST   /api/messages          public  - a customer sends a message
-//   GET    /api/messages          admin   - list messages (newest first)
-//   PATCH  /api/messages?id=...   admin   - mark read / unread  { read: true|false }
-//   DELETE /api/messages?id=...   admin   - delete a message
-//
-// Needs, in the Cloudflare Pages project settings:
-//   - KV namespace binding named MESSAGES
-//   - secret ADMIN_PASSWORD
+//   GET    /api/messages          owner   - list messages (newest first, 200 max)
+//   PATCH  /api/messages?id=...   owner   - mark read / unread  { read: true|false }
+//   DELETE /api/messages?id=...   owner   - delete a message
 
-import { json, requireAdmin } from "../../lib/admin.js";
+import { json, noDb, requireAdmin, ipKey } from "../../lib/admin.js";
 
 const LIMITS = { name: 80, contact: 120, message: 1500 };
 const SEND_PER_WINDOW = 5;          // messages per IP ...
 const SEND_WINDOW_S = 600;          // ... per 10 minutes
+const ID_RE = /^[0-9a-f-]{36}$/;
+
+let schemaReady = null;
+function ensureSchema(db) {
+  if (!schemaReady) {
+    schemaReady = db.batch([
+      db.prepare(`CREATE TABLE IF NOT EXISTS messages (
+        id TEXT PRIMARY KEY, name TEXT, contact TEXT, message TEXT NOT NULL, lang TEXT,
+        date TEXT NOT NULL, read INTEGER NOT NULL DEFAULT 0)`),
+      db.prepare("CREATE TABLE IF NOT EXISTS message_rate (ip TEXT NOT NULL, at INTEGER NOT NULL)"),
+      db.prepare("CREATE INDEX IF NOT EXISTS message_rate_ip ON message_rate (ip, at)"),
+    ]).catch((e) => { schemaReady = null; throw e; });
+  }
+  return schemaReady;
+}
 
 function clean(v, max) {
   return typeof v === "string" ? v.replace(/\u0000/g, "").trim().slice(0, max) : "";
 }
 
-// Newest first: KV lists keys in ascending order, so invert the timestamp.
-function newKey() {
-  const inv = String(9999999999999 - Date.now()).padStart(13, "0");
-  return `msg:${inv}:${crypto.randomUUID().slice(0, 8)}`;
-}
-
-async function bump(env, key, ttl) {
-  const n = parseInt((await env.MESSAGES.get(key)) || "0", 10) + 1;
-  await env.MESSAGES.put(key, String(n), { expirationTtl: ttl });
-  return n;
-}
-
 export async function onRequestPost({ request, env }) {
-  if (!env.MESSAGES) return json({ error: "storage_not_configured" }, 503);
+  if (!env.DB) return noDb();
   let body;
   try { body = await request.json(); } catch { return json({ error: "bad_request" }, 400); }
 
@@ -46,57 +45,56 @@ export async function onRequestPost({ request, env }) {
   };
   if (msg.message.length < 2) return json({ error: "empty_message" }, 400);
 
-  const ip = request.headers.get("cf-connecting-ip") || "unknown";
-  if ((await bump(env, `rate:${ip}`, SEND_WINDOW_S)) > SEND_PER_WINDOW) {
-    return json({ error: "too_many_messages" }, 429);
-  }
+  await ensureSchema(env.DB);
+  const now = Math.floor(Date.now() / 1000);
+  const ip = await ipKey(request, "msg");
+  const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM message_rate WHERE ip = ? AND at > ?")
+    .bind(ip, now - SEND_WINDOW_S).first("n");
+  if (recent >= SEND_PER_WINDOW) return json({ error: "too_many_messages" }, 429);
 
-  const key = newKey();
-  const record = { ...msg, id: key, date: new Date().toISOString(), read: false };
-  await env.MESSAGES.put(key, JSON.stringify(record));
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO messages (id, name, contact, message, lang, date, read) VALUES (?, ?, ?, ?, ?, ?, 0)")
+      .bind(crypto.randomUUID(), msg.name, msg.contact, msg.message, msg.lang, new Date().toISOString()),
+    env.DB.prepare("INSERT INTO message_rate (ip, at) VALUES (?, ?)").bind(ip, now),
+    env.DB.prepare("DELETE FROM message_rate WHERE at < ?").bind(now - SEND_WINDOW_S),
+  ]);
   return json({ ok: true });
 }
 
 export async function onRequestGet({ request, env }) {
-  if (!env.MESSAGES) return json({ error: "storage_not_configured" }, 503);
   const denied = await requireAdmin(request, env);
   if (denied) return denied;
-
-  const list = await env.MESSAGES.list({ prefix: "msg:", limit: 200 });
-  const items = await Promise.all(
-    list.keys.map(async (k) => {
-      const v = await env.MESSAGES.get(k.name);
-      try { return v ? JSON.parse(v) : null; } catch { return null; }
-    })
-  );
-  return json({ messages: items.filter(Boolean), more: !list.list_complete });
+  await ensureSchema(env.DB);
+  const { results } = await env.DB.prepare(
+    "SELECT id, name, contact, message, lang, date, read FROM messages ORDER BY date DESC LIMIT 201"
+  ).all();
+  const more = results.length > 200;
+  const messages = results.slice(0, 200).map((m) => ({ ...m, read: !!m.read }));
+  return json({ messages, more });
 }
 
-async function adminUpdate(request, env, fn) {
-  if (!env.MESSAGES) return json({ error: "storage_not_configured" }, 503);
+async function withMessage(request, env, fn) {
   const denied = await requireAdmin(request, env);
   if (denied) return denied;
   const id = new URL(request.url).searchParams.get("id") || "";
-  if (!/^msg:\d{13}:[0-9a-f]{8}$/.test(id)) return json({ error: "bad_id" }, 400);
+  if (!ID_RE.test(id)) return json({ error: "bad_id" }, 400);
+  await ensureSchema(env.DB);
   return fn(id);
 }
 
 export async function onRequestPatch({ request, env }) {
-  return adminUpdate(request, env, async (id) => {
-    const v = await env.MESSAGES.get(id);
-    if (!v) return json({ error: "not_found" }, 404);
+  return withMessage(request, env, async (id) => {
     let body = {};
     try { body = await request.json(); } catch {}
-    const rec = JSON.parse(v);
-    rec.read = body.read !== false;
-    await env.MESSAGES.put(id, JSON.stringify(rec));
+    const r = await env.DB.prepare("UPDATE messages SET read = ? WHERE id = ?").bind(body.read !== false ? 1 : 0, id).run();
+    if (!r.meta.changes) return json({ error: "not_found" }, 404);
     return json({ ok: true });
   });
 }
 
 export async function onRequestDelete({ request, env }) {
-  return adminUpdate(request, env, async (id) => {
-    await env.MESSAGES.delete(id);
+  return withMessage(request, env, async (id) => {
+    await env.DB.prepare("DELETE FROM messages WHERE id = ?").bind(id).run();
     return json({ ok: true });
   });
 }
