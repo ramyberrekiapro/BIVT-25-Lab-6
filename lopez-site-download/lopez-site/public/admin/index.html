@@ -14,6 +14,7 @@
     --ink:#2B211C; --muted:#75675D; --btn:#7A8B72; --line:rgba(43,33,28,.12); --ok:#56704c;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none !important;}
   body{margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased;}
   header{background:var(--dark); color:var(--bg); border-bottom:4px solid var(--gold); padding:calc(18px + env(safe-area-inset-top,0px)) 16px 0;}
   header .in{max-width:820px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding-bottom:14px;}
@@ -99,7 +100,10 @@
 <header>
   <div class="in">
     <h1>Lopez <small>Espace propriétaire / Owner</small></h1>
-    <button class="ghost small" id="logout" hidden>Déconnexion / Log out</button>
+    <span class="actions">
+      <button class="ghost small" id="pwBtn" hidden>Mot de passe / Password</button>
+      <button class="ghost small" id="logout" hidden>Déconnexion / Log out</button>
+    </span>
   </div>
   <nav class="tabs" id="tabs" role="tablist" hidden>
     <button role="tab" data-tab="messages" aria-selected="true">Messages<span class="pill" id="unreadPill" hidden></span></button>
@@ -112,8 +116,24 @@
   <form class="login" id="login">
     <label class="f" for="pw">Mot de passe admin / Admin password</label>
     <input type="password" id="pw" autocomplete="current-password" required>
-    <button type="submit" style="width:100%">Entrer / Sign in</button>
+    <button type="submit" style="width:100%" id="loginBtn">Entrer / Sign in</button>
     <p class="err" id="loginErr"></p>
+  </form>
+
+  <form class="login" id="pwForm" hidden novalidate>
+    <h2 style="font-family:'Playfair Display',serif; font-size:1.2rem; margin:0 0 6px;" id="pwTitle">Choisissez votre mot de passe / Choose your password</h2>
+    <p class="note" id="pwNote">Vous êtes connecté avec le mot de passe provisoire. Choisissez maintenant votre propre mot de passe (8 caractères minimum). Le mot de passe provisoire ne fonctionnera plus. / You signed in with the temporary password. Choose your own password now (at least 8 characters). The temporary password will stop working.</p>
+    <label class="f" for="pwCurrent">Mot de passe actuel / Current password</label>
+    <input type="password" id="pwCurrent" autocomplete="current-password">
+    <label class="f" for="pwNew">Nouveau mot de passe / New password</label>
+    <input type="password" id="pwNew" autocomplete="new-password" minlength="8">
+    <label class="f" for="pwNew2">Confirmer / Confirm</label>
+    <input type="password" id="pwNew2" autocomplete="new-password" minlength="8">
+    <div class="actions" style="justify-content:space-between">
+      <button type="button" class="small ghost" id="pwCancel">Annuler / Cancel</button>
+      <button type="submit" class="small" id="pwSave">Enregistrer / Save</button>
+    </div>
+    <p class="err" id="pwErr"></p>
   </form>
 
   <section id="tab-messages" hidden>
@@ -177,22 +197,26 @@
 
 <script>
 (function(){
-  var KEY = 'lopez-admin-pw';
-  var pw = '';
-  try{ pw = sessionStorage.getItem(KEY) || ''; }catch(e){}
+  // Sign-in uses a server session (HttpOnly cookie set by /api/admin/login); the password is
+  // never kept in this page or in browser storage.
   var $ = function(id){ return document.getElementById(id); };
   function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   function api(method, url, body){
     return fetch(url, {
       method: method,
-      headers: Object.assign({ 'authorization': 'Bearer ' + pw }, body ? { 'content-type': 'application/json' } : {}),
+      headers: Object.assign({ 'x-lopez-owner': '1' }, body ? { 'content-type': 'application/json' } : {}),
       body: body ? JSON.stringify(body) : undefined,
+      credentials: 'same-origin',
       cache: 'no-store'
     }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); });
   }
   function errText(d){
-    if (d._status === 401) return 'Mot de passe incorrect / Wrong password';
+    if (d.error === 'wrong_current_password') return 'Mot de passe actuel incorrect / Current password is wrong';
+    if (d.error === 'password_too_short') return 'Au moins 8 caractères / At least 8 characters';
+    if (d.error === 'password_not_new') return 'Choisissez un mot de passe différent du provisoire / Choose a password different from the temporary one';
+    if (d.error === 'password_change_required') return 'Changez d’abord le mot de passe provisoire / Change the temporary password first';
+    if (d._status === 401) return 'Session terminée, reconnectez-vous / Session ended, please sign in again';
     if (d._status === 429) return 'Trop d’essais, réessayez dans 15 min / Too many attempts, try again in 15 min';
     if (d.error === 'storage_not_configured') return 'Stockage KV non configuré (binding MESSAGES) / KV binding MESSAGES missing';
     if (d.error === 'database_not_configured') return 'Base D1 non configurée (binding DB) / D1 binding DB missing';
@@ -205,10 +229,30 @@
   function toast(msg){ var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.hidden = true; }, 2200); }
 
   // ---------------- session / tabs
+  function hideAll(){
+    ['tab-messages','tab-menu','tab-likes','login','pwForm'].forEach(function(id){ $(id).hidden = true; });
+    $('tabs').hidden = true; $('logout').hidden = true; $('pwBtn').hidden = true;
+  }
   function showLogin(msg){
-    ['tab-messages','tab-menu','tab-likes'].forEach(function(id){ $(id).hidden = true; });
-    $('tabs').hidden = true; $('logout').hidden = true; $('login').hidden = false;
+    hideAll(); $('login').hidden = false;
     $('loginErr').textContent = msg || '';
+  }
+  var pwForced = false;
+  function showPwForm(forced){
+    hideAll(); pwForced = forced;
+    $('pwForm').hidden = false; $('logout').hidden = false;
+    $('pwTitle').textContent = forced ? 'Choisissez votre mot de passe / Choose your password' : 'Changer le mot de passe / Change password';
+    $('pwNote').hidden = !forced;
+    $('pwCancel').hidden = forced;
+    ['pwCurrent','pwNew','pwNew2'].forEach(function(id){ $(id).value = ''; });
+    $('pwErr').textContent = '';
+    $('pwCurrent').focus();
+  }
+  // any owner call answered 401/403-change-required sends the owner back to the right screen
+  function sessionProblem(d){
+    if (d._status === 401){ showLogin('Session terminée, reconnectez-vous / Session ended, please sign in again'); return true; }
+    if (d.error === 'password_change_required'){ showPwForm(true); return true; }
+    return false;
   }
   var currentTab = 'messages';
   function showTab(name){
@@ -254,7 +298,7 @@
     $('panelErr').textContent = ''; $('refresh').disabled = true;
     return api('GET', '/api/messages').then(function(d){
       $('refresh').disabled = false;
-      if (d._status === 401 || d._status === 429){ try{ sessionStorage.removeItem(KEY); }catch(e){} showLogin(errText(d)); return false; }
+      if (sessionProblem(d)) return false;
       if (!d.messages){ $('panelErr').textContent = errText(d); return true; }
       renderMessages(d.messages, d.more); return true;
     }).catch(function(){ $('refresh').disabled = false; $('panelErr').textContent = errText({}); return true; });
@@ -443,23 +487,49 @@
     });
   }
 
-  // ---------------- sign in
+  // ---------------- sign in / password
   function enter(){
     loadMessages().then(function(ok){
       if (ok === false) return;
-      $('login').hidden = true; $('tabs').hidden = false; $('logout').hidden = false;
+      hideAll(); $('tabs').hidden = false; $('logout').hidden = false; $('pwBtn').hidden = false;
       showTab(currentTab);
     });
   }
   $('login').addEventListener('submit', function(e){
     e.preventDefault();
-    pw = $('pw').value;
-    try{ sessionStorage.setItem(KEY, pw); }catch(err){}
-    $('pw').value = '';
-    enter();
+    var btn = $('loginBtn'); btn.disabled = true; $('loginErr').textContent = '';
+    api('POST', '/api/admin/login', { password: $('pw').value }).then(function(d){
+      btn.disabled = false; $('pw').value = '';
+      if (!d.ok){ $('loginErr').textContent = d._status === 401 ? 'Mot de passe incorrect / Wrong password' : errText(d); return; }
+      if (d.mustChange) showPwForm(true); else enter();
+    }).catch(function(){ btn.disabled = false; $('loginErr').textContent = errText({}); });
   });
-  $('logout').addEventListener('click', function(){ pw = ''; try{ sessionStorage.removeItem(KEY); }catch(e){} showLogin(''); });
-  if (pw) enter();
+  $('pwForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var cur = $('pwCurrent').value, n1 = $('pwNew').value, n2 = $('pwNew2').value;
+    if (n1.length < 8){ $('pwErr').textContent = 'Au moins 8 caractères / At least 8 characters'; $('pwNew').focus(); return; }
+    if (n1 !== n2){ $('pwErr').textContent = 'Les deux nouveaux mots de passe sont différents / The two new passwords do not match'; $('pwNew2').focus(); return; }
+    var btn = $('pwSave'); btn.disabled = true; $('pwErr').textContent = 'Enregistrement… / Saving…';
+    api('POST', '/api/admin/password', { current: cur, next: n1 }).then(function(d){
+      btn.disabled = false;
+      if (!d.ok){ if (d._status === 401 && d.error !== 'wrong_current_password') { sessionProblem(d); return; } $('pwErr').textContent = errText(d); return; }
+      ['pwCurrent','pwNew','pwNew2'].forEach(function(id){ $(id).value = ''; });
+      toast('Mot de passe changé / Password changed'); enter();
+    }).catch(function(){ btn.disabled = false; $('pwErr').textContent = errText({}); });
+  });
+  $('pwCancel').addEventListener('click', function(){ if (!pwForced) enter(); });
+  $('pwBtn').addEventListener('click', function(){ showPwForm(false); });
+  $('logout').addEventListener('click', function(){
+    api('POST', '/api/admin/logout').then(function(){ showLogin(''); }, function(){ showLogin(''); });
+  });
+  // on open: resume an existing session, otherwise show the sign-in form
+  fetch('/api/admin/session', { credentials:'same-origin', cache:'no-store' })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); })
+    .then(function(d){
+      if (d.signedIn){ if (d.mustChange) showPwForm(true); else enter(); }
+      else showLogin(d._status === 503 ? errText(d) : '');
+    })
+    .catch(function(){ showLogin(''); });
 })();
 </script>
 </body>
