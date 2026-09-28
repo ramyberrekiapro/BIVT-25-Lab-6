@@ -1,14 +1,16 @@
-LOPEZ MENU - HOW TO PUBLISH (with customer messages + admin panel)
-===================================================================
+LOPEZ MENU - HOW TO PUBLISH (customer messages, admin panel, public like counts)
+=================================================================================
 
 Folder contents
   public/                  the website (menu = index.html, admin panel = admin/index.html)
-  functions/api/messages.js  the small server part that receives and stores messages
+  functions/api/messages.js  server part that receives and stores customer messages
+  functions/api/likes.js     server part that counts likes for every menu item
   HOW-TO-PUBLISH.txt       this file
 
 IMPORTANT: from now on, publish with the Terminal command in step 4.
 Dragging the folder into the Cloudflare dashboard uploads only the website,
-not the functions/ folder, and the message form will then show "Sending failed".
+not the functions/ folder: the message form then shows "Sending failed"
+and the like numbers disappear (hearts still work, but only on each phone).
 
 
 ONE-TIME SETUP (about 10 minutes)
@@ -17,8 +19,10 @@ ONE-TIME SETUP (about 10 minutes)
 1. Install Node.js (once)
    Download the "LTS" installer from https://nodejs.org and install it.
 
-2. Create the message storage (Cloudflare dashboard)
-   Storage & Databases -> KV -> Create -> name it: lopez-messages -> Create.
+2. Create the storage (Cloudflare dashboard)
+   a) Messages: Storage & Databases -> KV -> Create -> name it: lopez-messages -> Create.
+   b) Likes:    Storage & Databases -> D1 SQL Database -> Create -> name it: lopez-likes -> Create.
+      (No tables to set up: the site creates them itself on first use.)
 
 3. Connect storage + set your admin password (Cloudflare dashboard)
    Workers & Pages -> your project (e.g. lopez-menu) -> Settings
@@ -26,6 +30,11 @@ ONE-TIME SETUP (about 10 minutes)
    a) Bindings -> Add -> KV namespace
         Variable name:  MESSAGES          (exactly this, capital letters)
         KV namespace:   lopez-messages
+      Save.
+
+      Bindings -> Add -> D1 database
+        Variable name:  DB                (exactly this, capital letters)
+        D1 database:    lopez-likes
       Save.
 
    b) Variables and Secrets -> Add
@@ -65,5 +74,13 @@ Limits and behaviour
   - Each visitor can send 5 messages per 10 minutes (anti-spam).
   - 10 wrong passwords from one connection lock sign-in for 15 minutes.
   - You get no phone notification for new messages; open the admin panel to check.
+
+Likes
+  - Every visitor sees how many people liked each item (the number next to the heart).
+  - One like per phone/browser per item; tapping again removes it.
+  - Numbers refresh when the page is opened (they can lag up to about 10 seconds).
+  - Free plan: D1 allows 100,000 writes per day; each like/unlike uses about 3.
+  - Someone determined can still inflate a number (e.g. by clearing their browser data);
+    each connection is limited to 60 like/unlike taps per 10 minutes.
 
 To change the password: edit ADMIN_PASSWORD in step 3b, then publish again (step 4).
