@@ -290,7 +290,7 @@
    "desc_fr": "Pêche, gingembre, eau gazeuse.",
    "desc_en": "Peach, ginger, sparkling water.",
    "price": "600 DA",
-   "img": "https://tablebeep.com/public-image.php?id=5291"
+   "img": "img/secret-garden.jpg"
   },
   {
    "id": "cherry-spark",
@@ -300,7 +300,7 @@
    "desc_fr": "Cerise, ananas.",
    "desc_en": "Cherry, pineapple.",
    "price": "650 DA",
-   "img": "https://tablebeep.com/public-image.php?id=5292"
+   "img": "img/cherry-spark.jpg"
   },
   {
    "id": "marguarita",
@@ -310,7 +310,7 @@
    "desc_fr": "Orange, citron.",
    "desc_en": "Orange, lemon.",
    "price": "500 DA",
-   "img": "https://tablebeep.com/public-image.php?id=5293"
+   "img": "img/marguarita.jpg"
   },
   {
    "id": "classic-matcha-latte",
