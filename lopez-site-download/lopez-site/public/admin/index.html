@@ -222,6 +222,8 @@
     if (d.error === 'database_not_configured') return 'Base D1 non configurée (binding DB) / D1 binding DB missing';
     if (d.error === 'ADMIN_PASSWORD is not set') return 'ADMIN_PASSWORD non défini / ADMIN_PASSWORD not set';
     if (d.error === 'bad_photo') return 'Photo trop lourde ou format non pris en charge / Photo too large or unsupported';
+    if (d.error === 'database_error') return 'Erreur de la base D1, réessayez / D1 database error, try again';
+    if (d.error === 'server_error') return 'Erreur du serveur, réessayez / Server error, try again';
     if (d.error === 'name_and_section_required') return 'Le nom français est obligatoire / French name is required';
     return 'Erreur / Error (' + (d._status || 'réseau / network') + ')';
   }
@@ -311,12 +313,20 @@
   var likes = {};       // id -> count
   function loadMenu(){
     var p1 = base ? Promise.resolve(base) : fetch('/menu-data.json', { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(d){ base = d; return d; });
-    var p2 = fetch('/api/menu', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : { items: [] , _err: r.status }; });
+    var p2 = fetch('/api/menu', { cache:'no-store' }).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; if (!r.ok || !d.items) d._err = true; return d; });
+    }, function(){ return { _err: true }; });
     var p3 = fetch('/api/likes', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : { counts: {} }; }).catch(function(){ return { counts: {} }; });
     return Promise.all([p1, p2, p3]).then(function(res){
-      edits = {}; (res[1].items || []).forEach(function(it){ edits[it.id] = it; });
+      // the menu shown here is always what D1 holds; if it cannot be read, keep the last good copy
+      // and say so (showing the original menu would look like the changes were lost)
+      if (res[1]._err){
+        $('menuErr').textContent = 'Menu non chargé depuis D1 / Menu not loaded from D1 — ' + errText(res[1]);
+      } else {
+        edits = {}; res[1].items.forEach(function(it){ edits[it.id] = it; });
+        $('menuErr').textContent = '';
+      }
       likes = res[2].counts || {};
-      $('menuErr').textContent = res[1]._err ? errText({ _status: res[1]._err, error: res[1]._err === 503 ? 'database_not_configured' : '' }) : '';
       if (currentTab === 'menu') renderMenu();
     }).catch(function(){ $('menuErr').textContent = errText({}); });
   }

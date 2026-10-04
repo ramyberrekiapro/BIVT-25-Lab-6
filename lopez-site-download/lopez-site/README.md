@@ -34,6 +34,7 @@ functions/api/            server routes
   admin/logout.js         /api/admin/logout
   admin/session.js        /api/admin/session    signed in? must change password?
   admin/password.js       /api/admin/password   change the owner's password
+  _middleware.js          turns unexpected errors into JSON errors for the admin
 lib/admin.js              password + session checks shared by all routes
 tools/                    maintenance scripts (not needed to run the site)
 ```
@@ -84,6 +85,23 @@ DELETE FROM admin_settings WHERE key = 'password';
 
 Then sign in with `ADMIN_PASSWORD` (e.g. `0000`) and choose a new password.
 (To use a different temporary password, change the `ADMIN_PASSWORD` secret and retry the deployment.)
+
+## Where menu changes are stored
+
+Every change made in **Menu** on `/admin/` (added items, prices, names, descriptions, hidden /
+shown, photos) is written to the D1 table `menu_items` before the admin says
+**Enregistré / Saved**. The admin and the public menu then read it back from D1 (`GET /api/menu`,
+not cached), so changes are still there after a reload, on any device.
+
+To see the saved rows: Cloudflare → **Storage & Databases** → **D1** → your database → **Console**:
+
+```sql
+SELECT id, section, is_new, name_fr, price, hidden FROM menu_items;
+```
+
+If the admin shows "Base D1 non configurée / D1 binding DB missing", the `DB` binding is missing
+on the **Production** environment of the Pages project (Settings → Bindings), or the deployment
+was not retried after adding it.
 
 ## Updating
 

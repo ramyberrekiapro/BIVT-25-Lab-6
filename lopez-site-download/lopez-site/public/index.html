@@ -1291,7 +1291,7 @@
       if (it.desc_fr != null) f.desc = it.desc_fr || '\u00a0';
       if (it.price != null) f.price = it.price;
       if (it.name_en != null){ if (it.name_en) e.name = it.name_en; else delete e.name; }
-      if (it.desc_en != null) e.desc = it.desc_en || '\u00a0';
+      if (it.desc_en != null){ if (it.desc_en) e.desc = it.desc_en; else delete e.desc; }
       if (it.photo){
         var ph = card.querySelector('.ph'), img = ph.querySelector('img');
         if (!img){
@@ -1310,7 +1310,7 @@
     applyLang(lang);
     document.querySelectorAll('.card').forEach(refreshCounts);
   }
-  fetch('/api/menu')
+  fetch('/api/menu', { cache: 'no-store' })
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(d){ if (d && d.items && d.items.length) applyMenuEdits(d.items); })
     .catch(function(){});

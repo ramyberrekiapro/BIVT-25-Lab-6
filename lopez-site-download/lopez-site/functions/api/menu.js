@@ -1,6 +1,7 @@
 // Owner's edits to the menu, stored in D1 (binding DB).
 //   GET    /api/menu            public - all edits: { items: [...] } (the menu page applies them)
-//   PUT    /api/menu            owner  - save one item's edits (JSON body, see below)
+//   PUT    /api/menu            owner  - save one item's edits (JSON body, see below);
+//                                        returns { ok, item } with the row read back from D1
 //   DELETE /api/menu?id=...     owner  - undo all edits of a menu item, or delete an added item
 //
 // A row only stores what differs from the menu built into index.html: a null field means
@@ -14,6 +15,17 @@ import { json, requireAdmin } from "../../lib/admin.js";
 const ID_RE = /^[a-z0-9-]{1,60}$/;
 const MAX = { name: 80, desc: 400, price: 30 };
 const MAX_PHOTO = 900_000; // characters of data URL (~650 KB of JPEG)
+const COLUMNS = "id, section, is_new, name_fr, name_en, desc_fr, desc_en, price, hidden, photo_v, updated_at";
+
+// D1 row -> what the API returns (photo as a URL instead of the stored image data)
+function publicRow(r) {
+  return {
+    ...r,
+    is_new: !!r.is_new,
+    hidden: !!r.hidden,
+    photo: r.photo_v ? `/api/photo?id=${encodeURIComponent(r.id)}&v=${r.photo_v}` : null,
+  };
+}
 
 let schemaReady = null;
 export function ensureMenuSchema(db) {
@@ -37,16 +49,9 @@ function field(v, max) {
 export async function onRequestGet({ env }) {
   if (!env.DB) return json({ error: "database_not_configured" }, 503);
   await ensureMenuSchema(env.DB);
-  const { results } = await env.DB.prepare(
-    "SELECT id, section, is_new, name_fr, name_en, desc_fr, desc_en, price, hidden, photo_v, updated_at FROM menu_items ORDER BY updated_at"
-  ).all();
-  const items = results.map((r) => ({
-    ...r,
-    is_new: !!r.is_new,
-    hidden: !!r.hidden,
-    photo: r.photo_v ? `/api/photo?id=${encodeURIComponent(r.id)}&v=${r.photo_v}` : null,
-  }));
-  return json({ items }, 200, { "cache-control": "public, max-age=5" });
+  const { results } = await env.DB.prepare(`SELECT ${COLUMNS} FROM menu_items ORDER BY updated_at`).all();
+  // no-store: a change saved in /admin/ must show on the next page load, not after a cache expires
+  return json({ items: results.map(publicRow) });
 }
 
 export async function onRequestPut({ request, env }) {
@@ -84,16 +89,22 @@ export async function onRequestPut({ request, env }) {
     binds.push(b.photo, now);
   }
 
-  await env.DB.prepare(
-    `INSERT INTO menu_items (id, section, is_new, name_fr, name_en, desc_fr, desc_en, price, hidden, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(id) DO UPDATE SET section = excluded.section, is_new = excluded.is_new,
-       name_fr = excluded.name_fr, name_en = excluded.name_en, desc_fr = excluded.desc_fr,
-       desc_en = excluded.desc_en, price = excluded.price, hidden = excluded.hidden,
-       updated_at = excluded.updated_at`
-  ).bind(id, row.section, isNew ? 1 : 0, row.name_fr, row.name_en, row.desc_fr, row.desc_en, row.price, hidden, now).run();
-  await env.DB.prepare(`UPDATE menu_items SET ${photoSql} WHERE id = ?`).bind(...binds, id).run();
-  return json({ ok: true });
+  // one batch = one transaction: the text fields and the photo are saved together or not at all
+  const results = await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO menu_items (id, section, is_new, name_fr, name_en, desc_fr, desc_en, price, hidden, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET section = excluded.section, is_new = excluded.is_new,
+         name_fr = excluded.name_fr, name_en = excluded.name_en, desc_fr = excluded.desc_fr,
+         desc_en = excluded.desc_en, price = excluded.price, hidden = excluded.hidden,
+         updated_at = excluded.updated_at`
+    ).bind(id, row.section, isNew ? 1 : 0, row.name_fr, row.name_en, row.desc_fr, row.desc_en, row.price, hidden, now),
+    env.DB.prepare(`UPDATE menu_items SET ${photoSql} WHERE id = ?`).bind(...binds, id),
+    env.DB.prepare(`SELECT ${COLUMNS} FROM menu_items WHERE id = ?`).bind(id),
+  ]);
+  const saved = results[2].results[0];
+  if (!saved) return json({ error: "database_error" }, 500);
+  return json({ ok: true, item: publicRow(saved) });
 }
 
 export async function onRequestDelete({ request, env }) {
@@ -103,6 +114,6 @@ export async function onRequestDelete({ request, env }) {
   const id = new URL(request.url).searchParams.get("id") || "";
   if (!ID_RE.test(id)) return json({ error: "bad_id" }, 400);
   await ensureMenuSchema(env.DB);
-  await env.DB.prepare("DELETE FROM menu_items WHERE id = ?").bind(id).run();
-  return json({ ok: true });
+  const r = await env.DB.prepare("DELETE FROM menu_items WHERE id = ?").bind(id).run();
+  return json({ ok: true, deleted: r.meta.changes });
 }
