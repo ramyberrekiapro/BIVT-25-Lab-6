@@ -2,7 +2,8 @@
 
 - **Customer website** `/` — menu (French / English), likes, message form.
 - **Owner's admin** `/admin/` — separate private page, not linked anywhere on the customer site,
-  hidden from search engines, password required: Messages, Menu management, Likes.
+  hidden from search engines, password required: Messages, Menu (items and categories), Likes,
+  Contact (Instagram, Google Maps link, phone number).
 
 Both use the same server API (`/api/...`) and the same Cloudflare **D1** database:
 
@@ -28,7 +29,9 @@ public/                   website files
 functions/api/            server routes
   likes.js                /api/likes            like counts
   messages.js             /api/messages         send (public) / read, mark, delete (owner)
-  menu.js                 /api/menu             menu changes: read (public) / write (owner)
+  menu.js                 /api/menu             menu changes + categories: read (public) / write (owner)
+  sections.js             /api/sections         categories: add, remove, rename, reorder (owner)
+  site.js                 /api/site             contact details: read (public) / write (owner)
   photo.js                /api/photo            photos uploaded in the admin
   admin/login.js          /api/admin/login      sign in -> session cookie
   admin/logout.js         /api/admin/logout
@@ -36,6 +39,7 @@ functions/api/            server routes
   admin/password.js       /api/admin/password   change the owner's password
   _middleware.js          turns unexpected errors into JSON errors for the admin
 lib/admin.js              password + session checks shared by all routes
+lib/sections.js           categories: built-in list + owner's changes
 tools/                    maintenance scripts (not needed to run the site)
 ```
 
@@ -86,6 +90,21 @@ DELETE FROM admin_settings WHERE key = 'password';
 Then sign in with `ADMIN_PASSWORD` (e.g. `0000`) and choose a new password.
 (To use a different temporary password, change the `ADMIN_PASSWORD` secret and retry the deployment.)
 
+## Categories
+
+Admin → **Menu** → **Catégories / Categories**: rename (French and English), reorder with ↑ ↓,
+add, remove, then **Enregistrer / Save**. To move an item to another category: **Modifier / Edit**
+→ **Catégorie / Category**. A category can only be removed once it is empty (the server refuses
+otherwise), so no menu item or photo is ever lost. A new category stays hidden on the menu until
+it has a visible item. Stored in the D1 table `menu_sections`.
+
+## Contact details
+
+Admin → **Contact**: Instagram (@name or link), Google Maps link, phone number. They appear in the
+"Écrivez-nous / Write to us" section (phone as a tap-to-call link) and Instagram / Location at the
+top of the menu. An empty field is hidden. Until saved, the built-in Instagram and Google Maps links
+are used and no phone number is shown. Stored in the D1 table `site_settings`.
+
 ## Where menu changes are stored
 
 Every change made in **Menu** on `/admin/` (added items, prices, names, descriptions, hidden /
@@ -97,6 +116,8 @@ To see the saved rows: Cloudflare → **Storage & Databases** → **D1** → you
 
 ```sql
 SELECT id, section, is_new, name_fr, price, hidden FROM menu_items;
+SELECT * FROM menu_sections ORDER BY position;
+SELECT * FROM site_settings;
 ```
 
 If the admin shows "Base D1 non configurée / D1 binding DB missing", the `DB` binding is missing

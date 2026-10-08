@@ -1,16 +1,19 @@
 // Owner's edits to the menu, stored in D1 (binding DB).
-//   GET    /api/menu            public - all edits: { items: [...] } (the menu page applies them)
+//   GET    /api/menu            public - all edits: { items: [...], sections: [...] } (the menu
+//                                        page applies them; sections = categories, see sections.js)
 //   PUT    /api/menu            owner  - save one item's edits (JSON body, see below);
 //                                        returns { ok, item } with the row read back from D1
 //   DELETE /api/menu?id=...     owner  - undo all edits of a menu item, or delete an added item
 //
 // A row only stores what differs from the menu built into index.html: a null field means
 // "keep the original". Items the owner adds have is_new = 1 and carry all their fields.
+// For a built-in item, section moves it to another category (null = its own category).
 // PUT body: { id, section, name_fr, name_en, desc_fr, desc_en, price, hidden, is_new,
 //             photo }  where photo is a "data:image/jpeg;base64,..." string to replace the
 //             photo, "" to go back to the original photo, or absent to keep it as it is.
 
 import { json, requireAdmin } from "../../lib/admin.js";
+import { loadDefaults, storedSections, effectiveSections } from "../../lib/sections.js";
 
 const ID_RE = /^[a-z0-9-]{1,60}$/;
 const MAX = { name: 80, desc: 400, price: 30 };
@@ -51,7 +54,7 @@ export async function onRequestGet({ env }) {
   await ensureMenuSchema(env.DB);
   const { results } = await env.DB.prepare(`SELECT ${COLUMNS} FROM menu_items ORDER BY updated_at`).all();
   // no-store: a change saved in /admin/ must show on the next page load, not after a cache expires
-  return json({ items: results.map(publicRow) });
+  return json({ items: results.map(publicRow), sections: await storedSections(env.DB) });
 }
 
 export async function onRequestPut({ request, env }) {
@@ -76,6 +79,10 @@ export async function onRequestPut({ request, env }) {
   const hidden = b.hidden === true ? 1 : 0;
 
   await ensureMenuSchema(env.DB);
+  if (row.section !== null) {
+    const active = effectiveSections(await loadDefaults(request, env), await storedSections(env.DB));
+    if (!active.some((s) => s.id === row.section)) return json({ error: "bad_section" }, 400);
+  }
   const now = Date.now();
   let photoSql = "photo = photo, photo_v = photo_v";
   const binds = [];
@@ -114,6 +121,12 @@ export async function onRequestDelete({ request, env }) {
   const id = new URL(request.url).searchParams.get("id") || "";
   if (!ID_RE.test(id)) return json({ error: "bad_id" }, 400);
   await ensureMenuSchema(env.DB);
+  // undoing the edits of a built-in item puts it back in its own category: that category must exist
+  const defaults = await loadDefaults(request, env);
+  const def = defaults.items.find((it) => it.id === id);
+  if (def && !effectiveSections(defaults, await storedSections(env.DB)).some((s) => s.id === def.section)) {
+    return json({ error: "category_removed", section: def.section }, 409);
+  }
   const r = await env.DB.prepare("DELETE FROM menu_items WHERE id = ?").bind(id).run();
   return json({ ok: true, deleted: r.meta.changes });
 }

@@ -30,10 +30,10 @@
   button.danger{background:transparent; color:var(--accent); border-color:var(--accent);}
   button.small{padding:6px 12px; font-size:.78rem;}
   button:disabled{opacity:.5; cursor:default;}
-  button:focus-visible, input:focus-visible, textarea:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
   .login{max-width:360px; margin:40px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px;}
   label.f{display:block; font-size:.82rem; color:var(--muted); margin-bottom:5px;}
-  input[type=text], input[type=password], input[type=search], textarea{width:100%; font:16px 'DM Sans',sans-serif; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
+  input[type=text], input[type=password], input[type=search], input[type=tel], input[type=url], select, textarea{width:100%; font:16px 'DM Sans',sans-serif; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
   textarea{resize:vertical; min-height:64px;}
   .err{color:var(--accent); font-size:.85rem; min-height:1.2em; margin:4px 0 0;}
   .note{color:var(--muted); font-size:.82rem; margin:0 0 14px;}
@@ -83,6 +83,17 @@
   .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--dark); color:var(--bg); padding:10px 18px; border-radius:999px; font-size:.85rem; z-index:60;}
   .toast[hidden]{display:none;}
 
+  /* categories */
+  .cat-row{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 10px 0; margin-bottom:8px;}
+  .cat-row .top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; font-size:.8rem; color:var(--muted);}
+  .sheet .cat-row .top .actions{gap:6px; flex-wrap:nowrap; justify-content:flex-end; margin:0;}
+  .cat-row .top button{min-width:34px; white-space:nowrap;}
+  .cat-row label.f{margin-bottom:3px; font-size:.75rem;}
+  .cat-row input{margin-bottom:10px;}
+
+  /* contact */
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 16px; max-width:560px;}
+
   /* likes */
   .rank{display:grid; grid-template-columns:28px 44px 1fr auto; gap:10px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin-bottom:6px;}
   .rank .n{color:var(--muted); font-variant-numeric:tabular-nums; text-align:right;}
@@ -109,6 +120,7 @@
     <button role="tab" data-tab="messages" aria-selected="true">Messages<span class="pill" id="unreadPill" hidden></span></button>
     <button role="tab" data-tab="menu" aria-selected="false">Menu</button>
     <button role="tab" data-tab="likes" aria-selected="false">J’aime / Likes</button>
+    <button role="tab" data-tab="contact" aria-selected="false">Contact</button>
   </nav>
 </header>
 
@@ -147,6 +159,9 @@
 
   <section id="tab-menu" hidden>
     <p class="note">Les changements apparaissent sur le menu en ligne quelques secondes après l’enregistrement. / Changes show on the live menu a few seconds after saving.</p>
+    <div class="bar">
+      <button class="small" id="catBtn">Catégories / Categories</button>
+    </div>
     <input type="search" id="menuSearch" placeholder="Rechercher un article / Search an item">
     <p class="err" id="menuErr"></p>
     <div id="menuList"></div>
@@ -155,6 +170,20 @@
   <section id="tab-likes" hidden>
     <div class="stats" id="likeStats"></div>
     <div id="likeList"></div>
+  </section>
+
+  <section id="tab-contact" hidden>
+    <form class="panel" id="contactForm" novalidate>
+      <p class="note">Affichés dans la section « Écrivez-nous » et en haut du menu. Laissez un champ vide pour le masquer. / Shown in the “Write to us” section and at the top of the menu. Leave a field empty to hide it.</p>
+      <label class="f" for="ciInstagram">Instagram <span style="opacity:.8">(@nom ou lien / @name or link)</span></label>
+      <input type="text" id="ciInstagram" maxlength="200" autocomplete="off" spellcheck="false">
+      <label class="f" for="ciMaps">Localisation — lien Google Maps / Location — Google Maps link</label>
+      <input type="url" id="ciMaps" maxlength="500" autocomplete="off" spellcheck="false">
+      <label class="f" for="ciPhone">Téléphone / Phone</label>
+      <input type="tel" id="ciPhone" maxlength="24" autocomplete="off">
+      <p class="err" id="ciErr"></p>
+      <div class="actions" style="justify-content:flex-end"><button type="submit" class="small" id="ciSave">Enregistrer / Save</button></div>
+    </form>
   </section>
 </main>
 
@@ -179,6 +208,8 @@
       <div><label class="f" for="edDescFr">Description (français)</label><textarea id="edDescFr" maxlength="400" rows="3"></textarea></div>
       <div><label class="f" for="edDescEn">Description (English)</label><textarea id="edDescEn" maxlength="400" rows="3"></textarea></div>
     </div>
+    <label class="f" for="edCat">Catégorie / Category</label>
+    <select id="edCat"></select>
     <label class="f" for="edPrice">Prix / Price <span style="opacity:.8">(ex. 1,200 DA — ou « Prix sur place »)</span></label>
     <input type="text" id="edPrice" maxlength="30" inputmode="text">
     <label class="check"><input type="checkbox" id="edVisible"> Visible sur le menu / Shown on the menu</label>
@@ -190,6 +221,19 @@
         <button type="button" class="small ghost" id="edCancel">Annuler / Cancel</button>
         <button type="submit" class="small" id="edSave">Enregistrer / Save</button>
       </span>
+    </div>
+  </form>
+</div>
+<div class="overlay" id="catEditor" hidden>
+  <form class="sheet" id="catForm" novalidate>
+    <h3>Catégories / Categories</h3>
+    <p class="note">Renommez, changez l’ordre avec ↑ ↓, ajoutez ou supprimez. Une catégorie ne peut être supprimée que vide : déplacez d’abord ses articles (Modifier → Catégorie). / Rename, reorder with ↑ ↓, add or remove. A category can only be removed when empty: move its items first (Edit → Category).</p>
+    <div id="catList"></div>
+    <button type="button" class="small ghost" id="catAdd" style="margin:4px 0 14px">+ Ajouter une catégorie / Add a category</button>
+    <p class="err" id="catErr"></p>
+    <div class="actions">
+      <button type="button" class="small ghost" id="catCancel">Annuler / Cancel</button>
+      <button type="submit" class="small" id="catSave">Enregistrer / Save</button>
     </div>
   </form>
 </div>
@@ -224,6 +268,13 @@
     if (d.error === 'bad_photo') return 'Photo trop lourde ou format non pris en charge / Photo too large or unsupported';
     if (d.error === 'database_error') return 'Erreur de la base D1, réessayez / D1 database error, try again';
     if (d.error === 'server_error') return 'Erreur du serveur, réessayez / Server error, try again';
+    if (d.error === 'category_not_empty') return 'Catégorie « ' + sectionTitle(d.id) + ' » non vide (' + d.count + ' article(s)) : déplacez d’abord ses articles / Category “' + sectionTitle(d.id) + '” is not empty (' + d.count + ' item(s)): move its items first';
+    if (d.error === 'category_name_required') return 'Chaque catégorie doit avoir un nom français / Every category needs a French name';
+    if (d.error === 'category_removed') return 'La catégorie d’origine de cet article a été supprimée : choisissez une autre catégorie / This item’s original category was removed: choose another category';
+    if (d.error === 'bad_section') return 'Catégorie inconnue, rechargez la page / Unknown category, reload the page';
+    if (d.error === 'bad_instagram') return 'Instagram : @nom ou lien instagram.com / Instagram: @name or instagram.com link';
+    if (d.error === 'bad_maps') return 'Localisation : collez un lien Google Maps (https://maps.app.goo.gl/…) / Location: paste a Google Maps link';
+    if (d.error === 'bad_phone') return 'Téléphone : chiffres, espaces et + seulement / Phone: digits, spaces and + only';
     if (d.error === 'name_and_section_required') return 'Le nom français est obligatoire / French name is required';
     return 'Erreur / Error (' + (d._status || 'réseau / network') + ')';
   }
@@ -232,7 +283,7 @@
 
   // ---------------- session / tabs
   function hideAll(){
-    ['tab-messages','tab-menu','tab-likes','login','pwForm'].forEach(function(id){ $(id).hidden = true; });
+    ['tab-messages','tab-menu','tab-likes','tab-contact','login','pwForm'].forEach(function(id){ $(id).hidden = true; });
     $('tabs').hidden = true; $('logout').hidden = true; $('pwBtn').hidden = true;
   }
   function showLogin(msg){
@@ -260,9 +311,10 @@
   function showTab(name){
     currentTab = name;
     document.querySelectorAll('#tabs button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
-    ['messages','menu','likes'].forEach(function(n){ $('tab-' + n).hidden = n !== name; });
+    ['messages','menu','likes','contact'].forEach(function(n){ $('tab-' + n).hidden = n !== name; });
     if (name === 'menu') loadMenu();
     if (name === 'likes') loadMenu().then(renderLikes);
+    if (name === 'contact') loadContact();
   }
   document.querySelectorAll('#tabs button').forEach(function(b){ b.addEventListener('click', function(){ showTab(b.getAttribute('data-tab')); }); });
 
@@ -310,6 +362,7 @@
   // ---------------- menu data
   var base = null;      // menu-data.json: defaults built into the site
   var edits = {};       // id -> row from /api/menu
+  var secRows = [];     // categories layout from /api/menu (D1 menu_sections), [] = built-in
   var likes = {};       // id -> count
   function loadMenu(){
     var p1 = base ? Promise.resolve(base) : fetch('/menu-data.json', { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(d){ base = d; return d; });
@@ -324,6 +377,7 @@
         $('menuErr').textContent = 'Menu non chargé depuis D1 / Menu not loaded from D1 — ' + errText(res[1]);
       } else {
         edits = {}; res[1].items.forEach(function(it){ edits[it.id] = it; });
+        secRows = res[1].sections || [];
         $('menuErr').textContent = '';
       }
       likes = res[2].counts || {};
@@ -336,7 +390,7 @@
     ed = ed || {};
     function pick(k){ return ed[k] != null ? ed[k] : (def ? def[k] : ''); }
     return {
-      id: def ? def.id : ed.id, section: def ? def.section : ed.section, isNew: !def,
+      id: def ? def.id : ed.id, section: (def ? ed.section || def.section : ed.section), isNew: !def,
       name_fr: pick('name_fr'), name_en: pick('name_en'), desc_fr: pick('desc_fr'), desc_en: pick('desc_en'), price: pick('price'),
       hidden: !!ed.hidden, img: ed.photo || (def ? def.img : null), customPhoto: !!ed.photo, edited: !!(ed.id && def)
     };
@@ -346,7 +400,26 @@
     Object.keys(edits).forEach(function(id){ if (edits[id].is_new) out.push(current(null, edits[id])); });
     return out;
   }
-  function sectionTitle(id){ var s = base.sections.filter(function(x){ return x.id === id; })[0]; return s ? s.title_fr : id; }
+  // categories on the menu, in order: built-in ones merged with the owner's layout (same rules as the server)
+  function sections(){
+    var def = {}; base.sections.forEach(function(s){ def[s.id] = s; });
+    var seen = {}, out = [];
+    secRows.forEach(function(r){
+      seen[r.id] = true;
+      var d = def[r.id];
+      if (r.removed || (!d && !r.is_new)) return;
+      out.push({ id: r.id, isNew: !d, title_fr: r.title_fr != null ? r.title_fr : d.title_fr,
+                 title_en: r.title_en != null ? r.title_en : (d ? d.title_en : '') });
+    });
+    base.sections.forEach(function(d){ if (!seen[d.id]) out.push({ id: d.id, isNew: false, title_fr: d.title_fr, title_en: d.title_en }); });
+    return out;
+  }
+  function sectionTitle(id){
+    var s = base && sections().filter(function(x){ return x.id === id; })[0];
+    if (s) return s.title_fr;
+    var d = base && base.sections.filter(function(x){ return x.id === id; })[0];
+    return d ? d.title_fr : id;
+  }
   function thumb(src, cls){
     if (!src){ return el('div', (cls || 'thumb') + ' none', 'pas de photo'); }
     var i = el('img', cls || 'thumb'); i.src = /^(https?:|\/|data:)/.test(src) ? src : '/' + src; i.alt = ''; i.loading = 'lazy'; return i;
@@ -356,14 +429,18 @@
     if (!base) return;
     var q = $('menuSearch').value.trim().toLowerCase();
     var list = $('menuList'); list.textContent = '';
-    var items = allItems();
-    base.sections.forEach(function(sec){
-      var rows = items.filter(function(it){ return it.section === sec.id && (!q || (it.name_fr + ' ' + it.name_en).toLowerCase().indexOf(q) !== -1); });
+    var items = allItems(), secs = sections();
+    var ids = secs.map(function(x){ return x.id; });
+    // safety net: items whose category no longer exists stay visible here
+    if (items.some(function(it){ return ids.indexOf(it.section) === -1; })) secs = secs.concat([{ id: null, title_fr: 'Sans catégorie / No category' }]);
+    secs.forEach(function(sec){
+      var rows = items.filter(function(it){ return (sec.id === null ? ids.indexOf(it.section) === -1 : it.section === sec.id) && (!q || (it.name_fr + ' ' + it.name_en).toLowerCase().indexOf(q) !== -1); });
       if (q && !rows.length) return;
       var box = el('div', 'sec');
       var head = el('div', 'sec-head'); head.appendChild(el('h2', '', sec.title_fr));
-      var add = el('button', 'small ghost', '+ Ajouter / Add'); add.onclick = function(){ openEditor(null, sec.id); };
-      head.appendChild(add); box.appendChild(head);
+      if (sec.id !== null){ var add = el('button', 'small ghost', '+ Ajouter / Add'); add.onclick = function(){ openEditor(null, sec.id); }; head.appendChild(add); }
+      box.appendChild(head);
+      if (!rows.length) box.appendChild(el('p', 'note', 'Aucun article / No item'));
       rows.forEach(function(it){
         var r = el('div', 'row' + (it.hidden ? ' is-hidden' : ''));
         r.appendChild(thumb(it.img));
@@ -397,10 +474,14 @@
       name_fr: '', name_en: '', desc_fr: '', desc_en: '', price: '', hidden: false, img: null, customPhoto: false, edited: false };
     ed = { id: it.id, def: def, section: it.section, isNew: it.isNew, photo: undefined, current: it };
     $('edTitle').textContent = it.isNew && !id ? 'Nouvel article / New item' : 'Modifier / Edit — ' + it.name_fr;
-    $('edSection').textContent = 'Catégorie / Category : ' + sectionTitle(it.section) + (id ? '  ·  ♥ ' + (likes[id] || 0) : '');
+    $('edSection').textContent = id ? '♥ ' + (likes[id] || 0) + ' J’aime / likes' : '';
     $('edNameFr').value = it.name_fr; $('edNameEn').value = it.name_en;
     $('edDescFr').value = it.desc_fr; $('edDescEn').value = it.desc_en;
     $('edPrice').value = it.price; $('edVisible').checked = !it.hidden;
+    var sel = $('edCat'); sel.textContent = '';
+    sections().forEach(function(x){ var o = el('option', '', x.title_fr); o.value = x.id; sel.appendChild(o); });
+    sel.value = it.section;
+    if (sel.value !== it.section){ var o = el('option', '', '— choisir / choose —'); o.value = ''; sel.insertBefore(o, sel.firstChild); sel.value = ''; }
     showPhoto(it.img);
     $('edPhotoReset').hidden = !it.customPhoto || !def;
     $('edReset').hidden = !(it.isNew && id) && !(def && it.edited);
@@ -450,18 +531,21 @@
     var v = { name_fr: $('edNameFr').value.trim(), name_en: $('edNameEn').value.trim(), desc_fr: $('edDescFr').value.trim(),
               desc_en: $('edDescEn').value.trim(), price: $('edPrice').value.trim() };
     if (!v.name_fr){ $('edErr').textContent = 'Le nom français est obligatoire / French name is required'; $('edNameFr').focus(); return; }
+    var cat = $('edCat').value;
+    if (!cat){ $('edErr').textContent = 'Choisissez une catégorie / Choose a category'; $('edCat').focus(); return; }
     var body = { id: ed.id, hidden: !$('edVisible').checked };
     if (ed.isNew){
-      body.is_new = true; body.section = ed.section;
+      body.is_new = true; body.section = cat;
       Object.keys(v).forEach(function(k){ body[k] = v[k]; });
     } else {
       // store only what differs from the original menu
       Object.keys(v).forEach(function(k){ body[k] = v[k] === (ed.def[k] || '') ? null : v[k]; });
+      body.section = cat === ed.def.section ? null : cat;
     }
     if (ed.photo !== undefined) body.photo = ed.photo;
     // an original item left exactly as it was: remove its row instead of saving an empty edit
     var hasCustomPhoto = typeof ed.photo === 'string' ? ed.photo !== '' : ed.current.customPhoto;
-    var nothing = !ed.isNew && !body.hidden && !hasCustomPhoto && Object.keys(v).every(function(k){ return body[k] === null; });
+    var nothing = !ed.isNew && !body.hidden && !hasCustomPhoto && body.section === null && Object.keys(v).every(function(k){ return body[k] === null; });
     var btn = $('edSave'); btn.disabled = true; $('edErr').textContent = 'Enregistrement… / Saving…';
     var req = nothing ? api('DELETE', '/api/menu?id=' + encodeURIComponent(ed.id)) : api('PUT', '/api/menu', body);
     req.then(function(r){
@@ -469,6 +553,86 @@
       if (!r.ok){ $('edErr').textContent = errText(r); return; }
       closeEditor(); toast('Enregistré / Saved'); loadMenu();
     }).catch(function(){ btn.disabled = false; $('edErr').textContent = errText({}); });
+  });
+
+  // ---------------- categories
+  var catDraft = [];   // [{ id, isNew, title_fr, title_en }] being edited, in order
+  function itemCount(id){ return allItems().filter(function(it){ return it.section === id; }).length; }
+  function renderCats(){
+    var list = $('catList'); list.textContent = '';
+    catDraft.forEach(function(c, i){
+      var row = el('div', 'cat-row');
+      var top = el('div', 'top');
+      var n = c.isNew && !c.saved ? 0 : itemCount(c.id);
+      top.appendChild(el('span', '', (i + 1) + '.  ' + n + ' art.' + (c.isNew && !c.saved ? '  ·  nouvelle / new' : '')));
+      var acts = el('span', 'actions');
+      var up = el('button', 'small ghost', '↑'); up.type = 'button'; up.disabled = i === 0; up.setAttribute('aria-label', 'Monter / Move up');
+      up.onclick = function(){ catDraft.splice(i - 1, 0, catDraft.splice(i, 1)[0]); renderCats(); };
+      var dn = el('button', 'small ghost', '↓'); dn.type = 'button'; dn.disabled = i === catDraft.length - 1; dn.setAttribute('aria-label', 'Descendre / Move down');
+      dn.onclick = function(){ catDraft.splice(i + 1, 0, catDraft.splice(i, 1)[0]); renderCats(); };
+      var del = el('button', 'small danger', 'Supprimer'); del.type = 'button'; del.setAttribute('aria-label', 'Supprimer / Remove');
+      del.disabled = n > 0 || catDraft.length === 1;
+      if (n > 0) del.title = 'Déplacez d’abord ses articles / Move its items first';
+      del.onclick = function(){ catDraft.splice(i, 1); renderCats(); };
+      acts.appendChild(up); acts.appendChild(dn); acts.appendChild(del); top.appendChild(acts);
+      row.appendChild(top);
+      var two = el('div', 'two');
+      [['title_fr', 'Nom (français)'], ['title_en', 'Name (English)']].forEach(function(f){
+        var w = el('div'); var inp = el('input'); inp.type = 'text'; inp.maxLength = 60; inp.value = c[f[0]] || '';
+        inp.id = 'cat-' + f[0] + '-' + i; var lb = el('label', 'f', f[1]); lb.htmlFor = inp.id; w.appendChild(lb);
+        inp.oninput = function(){ c[f[0]] = inp.value; };
+        w.appendChild(inp); two.appendChild(w);
+      });
+      row.appendChild(two);
+      list.appendChild(row);
+    });
+  }
+  $('catBtn').addEventListener('click', function(){
+    if (!base) return;
+    catDraft = sections().map(function(x){ return { id: x.id, isNew: x.isNew, saved: true, title_fr: x.title_fr, title_en: x.title_en || '' }; });
+    $('catErr').textContent = ''; renderCats(); $('catEditor').hidden = false;
+  });
+  $('catAdd').addEventListener('click', function(){
+    var id = 'cat-' + Array.from(crypto.getRandomValues(new Uint8Array(4)), function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+    catDraft.push({ id: id, isNew: true, saved: false, title_fr: '', title_en: '' });
+    renderCats();
+    var inputs = $('catList').querySelectorAll('input'); inputs[inputs.length - 2].focus();
+  });
+  function closeCats(){ $('catEditor').hidden = true; }
+  $('catCancel').addEventListener('click', closeCats);
+  $('catEditor').addEventListener('click', function(e){ if (e.target === $('catEditor')) closeCats(); });
+  $('catForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var body = catDraft.map(function(c){ return { id: c.id, title_fr: (c.title_fr || '').trim(), title_en: (c.title_en || '').trim() }; });
+    if (body.some(function(c){ return !c.title_fr; })){ $('catErr').textContent = errText({ error: 'category_name_required' }); return; }
+    var btn = $('catSave'); btn.disabled = true; $('catErr').textContent = 'Enregistrement… / Saving…';
+    api('PUT', '/api/sections', { sections: body }).then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ $('catErr').textContent = errText(r); return; }
+      secRows = r.sections; closeCats(); toast('Catégories enregistrées / Categories saved'); loadMenu();
+    }).catch(function(){ btn.disabled = false; $('catErr').textContent = errText({}); });
+  });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('catEditor').hidden) closeCats(); });
+
+  // ---------------- contact details
+  function loadContact(){
+    $('ciErr').textContent = '';
+    return fetch('/api/site', { cache:'no-store' }).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; });
+    }).then(function(d){
+      if (d._status !== 200){ $('ciErr').textContent = errText(d); return; }
+      $('ciInstagram').value = d.instagram; $('ciMaps').value = d.maps; $('ciPhone').value = d.phone;
+    }, function(){ $('ciErr').textContent = errText({}); });
+  }
+  $('contactForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = $('ciSave'); btn.disabled = true; $('ciErr').textContent = 'Enregistrement… / Saving…';
+    api('PUT', '/api/site', { instagram: $('ciInstagram').value, maps: $('ciMaps').value, phone: $('ciPhone').value }).then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ $('ciErr').textContent = errText(r); return; }
+      $('ciInstagram').value = r.instagram; $('ciMaps').value = r.maps; $('ciPhone').value = r.phone;
+      $('ciErr').textContent = ''; toast('Enregistré / Saved');
+    }).catch(function(){ btn.disabled = false; $('ciErr').textContent = errText({}); });
   });
 
   // ---------------- likes
