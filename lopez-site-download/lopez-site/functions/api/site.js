@@ -1,15 +1,23 @@
-// Café contact details shown on the menu (contact section and top of the page).
-//   GET /api/site   public -> { instagram, maps, phone }   ("" = not shown)
-//   PUT /api/site   owner  -> same fields; returns the saved values read back from D1
-// Stored in D1 table site_settings (key "contact"). Until the owner saves them, the built-in
-// Instagram and Google Maps links are used and no phone number is shown.
+// Contact section of the menu ("Écrivez-nous / Write to us") and the links at the top of the page.
+//   GET /api/site   public -> { title_fr, title_en, intro_fr, intro_en, instagram, maps, address,
+//                               phone, email }   ("" = not shown)
+//   PUT /api/site   owner  -> any of these fields (a field left out keeps its saved value);
+//                             returns all values read back from D1
+// Stored in D1 table site_settings (key "contact"). Until the owner saves them, the texts and links
+// the site already showed are used; no phone number, address or e-mail is shown.
 
 import { json, requireAdmin, noDb } from "../../lib/admin.js";
 
 const DEFAULTS = {
+  title_fr: "Écrivez-nous",
+  title_en: "Write to us",
+  intro_fr: "Un avis, une question, une réservation ? Laissez-nous un message.",
+  intro_en: "Feedback, a question, a reservation? Leave us a message.",
   instagram: "https://www.instagram.com/lopezcoffeebrunch",
   maps: "https://maps.app.goo.gl/iDiVehnUwiYFkFbt8?g_st=ic",
+  address: "",
   phone: "",
+  email: "",
 };
 
 let schemaReady = null;
@@ -54,12 +62,33 @@ function maps(v) {
   return ok ? u.toString() : null;
 }
 
+function text(max) {
+  return (v) => v.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+// the section title cannot be empty: an empty one goes back to the built-in title
+function title(key) {
+  return (v) => text(60)(v) || DEFAULTS[key];
+}
+
+function email(v) {
+  v = v.trim();
+  if (!v) return "";
+  return v.length <= 120 && /^[^\s@<>"]+@[^\s@<>"]+\.[A-Za-z]{2,}$/.test(v) ? v : null;
+}
+
 function phone(v) {
   v = v.replace(/\s+/g, " ").trim();
   if (!v) return "";
   const digits = v.replace(/\D/g, "").length;
   return /^\+?[0-9 ().-]{6,24}$/.test(v) && digits >= 6 && digits <= 15 ? v : null;
 }
+
+const FIELDS = {
+  title_fr: title("title_fr"), title_en: title("title_en"),
+  intro_fr: text(300), intro_en: text(300),
+  instagram, maps, address: text(150), phone, email,
+};
 
 export async function onRequestGet({ env }) {
   if (!env.DB) return noDb();
@@ -71,10 +100,15 @@ export async function onRequestPut({ request, env }) {
   if (denied) return denied;
   let b;
   try { b = await request.json(); } catch { return json({ error: "bad_request" }, 400); }
-  if (!b || ["instagram", "maps", "phone"].some((k) => typeof b[k] !== "string")) return json({ error: "bad_request" }, 400);
-  const value = { instagram: instagram(b.instagram), maps: maps(b.maps), phone: phone(b.phone) };
-  for (const k of Object.keys(value)) if (value[k] === null) return json({ error: "bad_" + k }, 400);
-  await ensureSchema(env.DB);
+  if (!b || typeof b !== "object") return json({ error: "bad_request" }, 400);
+  const value = await readContact(env.DB);
+  for (const k of Object.keys(FIELDS)) {
+    if (b[k] === undefined) continue;
+    if (typeof b[k] !== "string") return json({ error: "bad_request" }, 400);
+    const v = FIELDS[k](b[k]);
+    if (v === null) return json({ error: "bad_" + k }, 400);
+    value[k] = v;
+  }
   await env.DB.prepare(
     "INSERT INTO site_settings (key, value) VALUES ('contact', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
   ).bind(JSON.stringify(value)).run();

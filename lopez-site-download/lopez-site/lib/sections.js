@@ -57,17 +57,3 @@ export function effectiveSections(defaults, rows) {
   }
   return out;
 }
-
-// Number of menu items (built-in and added, hidden ones included) in each category.
-export async function itemCountsBySection(db, defaults) {
-  const { results } = await db.prepare("SELECT id, section, is_new FROM menu_items").all();
-  const override = new Map(results.map((r) => [r.id, r]));
-  const counts = new Map();
-  const add = (s) => counts.set(s, (counts.get(s) || 0) + 1);
-  for (const it of defaults.items) {
-    const o = override.get(it.id);
-    add((o && o.section) || it.section);
-  }
-  for (const r of results) if (r.is_new && r.section) add(r.section);
-  return counts;
-}

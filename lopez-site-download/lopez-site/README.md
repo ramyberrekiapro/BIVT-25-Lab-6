@@ -3,7 +3,7 @@
 - **Customer website** `/` — menu (French / English), likes, message form.
 - **Owner's admin** `/admin/` — separate private page, not linked anywhere on the customer site,
   hidden from search engines, password required: Messages, Menu (items and categories), Likes,
-  Contact (Instagram, Google Maps link, phone number).
+  Contact (section title and text, Instagram, Google Maps link, address, phone, e-mail).
 
 Both use the same server API (`/api/...`) and the same Cloudflare **D1** database:
 
@@ -93,17 +93,23 @@ Then sign in with `ADMIN_PASSWORD` (e.g. `0000`) and choose a new password.
 ## Categories
 
 Admin → **Menu** → **Catégories / Categories**: rename (French and English), reorder with ↑ ↓,
-add, remove, then **Enregistrer / Save**. To move an item to another category: **Modifier / Edit**
-→ **Catégorie / Category**. A category can only be removed once it is empty (the server refuses
-otherwise), so no menu item or photo is ever lost. A new category stays hidden on the menu until
-it has a visible item. Stored in the D1 table `menu_sections`.
+add, delete, then **Enregistrer / Save**. To move an item to another category: **Modifier / Edit**
+→ **Catégorie / Category**. A new category stays hidden on the menu until it has a visible item.
+Stored in the D1 table `menu_sections`.
+
+Any category can be deleted, built-in ones included. A deleted built-in category is stored in D1
+(`removed = 1`), so it stays deleted after a refresh or a redeploy. Its items disappear from the
+customer menu but are not deleted: the admin lists them under **Sans catégorie / No category**,
+where each can be moved to another category to show it again.
 
 ## Contact details
 
-Admin → **Contact**: Instagram (@name or link), Google Maps link, phone number. They appear in the
-"Écrivez-nous / Write to us" section (phone as a tap-to-call link) and Instagram / Location at the
-top of the menu. An empty field is hidden. Until saved, the built-in Instagram and Google Maps links
-are used and no phone number is shown. Stored in the D1 table `site_settings`.
+Admin → **Contact**: section title and text (French / English), Instagram (@name or link),
+Google Maps link, address, phone number, e-mail. They appear in the "Écrivez-nous / Write to us"
+section (phone as tap-to-call, e-mail as a mail link); Instagram and Location also at the top of
+the menu. An empty field is hidden (an empty title goes back to "Écrivez-nous" / "Write to us").
+Until saved, the texts and links the site already showed are used. Stored in the D1 table
+`site_settings`.
 
 ## Where menu changes are stored
 

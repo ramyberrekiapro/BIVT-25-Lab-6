@@ -33,7 +33,7 @@
   button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
   .login{max-width:360px; margin:40px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px;}
   label.f{display:block; font-size:.82rem; color:var(--muted); margin-bottom:5px;}
-  input[type=text], input[type=password], input[type=search], input[type=tel], input[type=url], select, textarea{width:100%; font:16px 'DM Sans',sans-serif; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
+  input[type=text], input[type=password], input[type=search], input[type=tel], input[type=url], input[type=email], select, textarea{width:100%; font:16px 'DM Sans',sans-serif; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); margin-bottom:12px;}
   textarea{resize:vertical; min-height:64px;}
   .err{color:var(--accent); font-size:.85rem; min-height:1.2em; margin:4px 0 0;}
   .note{color:var(--muted); font-size:.82rem; margin:0 0 14px;}
@@ -174,13 +174,25 @@
 
   <section id="tab-contact" hidden>
     <form class="panel" id="contactForm" novalidate>
-      <p class="note">Affichés dans la section « Écrivez-nous » et en haut du menu. Laissez un champ vide pour le masquer. / Shown in the “Write to us” section and at the top of the menu. Leave a field empty to hide it.</p>
+      <p class="note">Section « Écrivez-nous » du menu client (Instagram et Localisation aussi en haut du menu). Laissez un champ vide pour le masquer. / “Write to us” section of the customer menu (Instagram and Location also at the top). Leave a field empty to hide it.</p>
+      <div class="two">
+        <div><label class="f" for="ciTitleFr">Titre (français)</label><input type="text" id="ciTitleFr" maxlength="60"></div>
+        <div><label class="f" for="ciTitleEn">Title (English)</label><input type="text" id="ciTitleEn" maxlength="60"></div>
+      </div>
+      <div class="two">
+        <div><label class="f" for="ciIntroFr">Texte (français)</label><textarea id="ciIntroFr" maxlength="300" rows="2"></textarea></div>
+        <div><label class="f" for="ciIntroEn">Text (English)</label><textarea id="ciIntroEn" maxlength="300" rows="2"></textarea></div>
+      </div>
       <label class="f" for="ciInstagram">Instagram <span style="opacity:.8">(@nom ou lien / @name or link)</span></label>
       <input type="text" id="ciInstagram" maxlength="200" autocomplete="off" spellcheck="false">
       <label class="f" for="ciMaps">Localisation — lien Google Maps / Location — Google Maps link</label>
       <input type="url" id="ciMaps" maxlength="500" autocomplete="off" spellcheck="false">
+      <label class="f" for="ciAddress">Adresse <span style="opacity:.8">(affichée sous Localisation / shown under Location)</span></label>
+      <input type="text" id="ciAddress" maxlength="150">
       <label class="f" for="ciPhone">Téléphone / Phone</label>
       <input type="tel" id="ciPhone" maxlength="24" autocomplete="off">
+      <label class="f" for="ciEmail">E-mail</label>
+      <input type="email" id="ciEmail" maxlength="120" autocomplete="off" spellcheck="false">
       <p class="err" id="ciErr"></p>
       <div class="actions" style="justify-content:flex-end"><button type="submit" class="small" id="ciSave">Enregistrer / Save</button></div>
     </form>
@@ -227,7 +239,7 @@
 <div class="overlay" id="catEditor" hidden>
   <form class="sheet" id="catForm" novalidate>
     <h3>Catégories / Categories</h3>
-    <p class="note">Renommez, changez l’ordre avec ↑ ↓, ajoutez ou supprimez. Une catégorie ne peut être supprimée que vide : déplacez d’abord ses articles (Modifier → Catégorie). / Rename, reorder with ↑ ↓, add or remove. A category can only be removed when empty: move its items first (Edit → Category).</p>
+    <p class="note">Renommez, changez l’ordre avec ↑ ↓, ajoutez ou supprimez. Les articles d’une catégorie supprimée disparaissent du menu client ; ils restent ici sous « Sans catégorie », d’où vous pouvez les déplacer. / Rename, reorder with ↑ ↓, add or delete. Items of a deleted category disappear from the customer menu; they stay here under “No category”, where you can move them.</p>
     <div id="catList"></div>
     <button type="button" class="small ghost" id="catAdd" style="margin:4px 0 14px">+ Ajouter une catégorie / Add a category</button>
     <p class="err" id="catErr"></p>
@@ -268,12 +280,12 @@
     if (d.error === 'bad_photo') return 'Photo trop lourde ou format non pris en charge / Photo too large or unsupported';
     if (d.error === 'database_error') return 'Erreur de la base D1, réessayez / D1 database error, try again';
     if (d.error === 'server_error') return 'Erreur du serveur, réessayez / Server error, try again';
-    if (d.error === 'category_not_empty') return 'Catégorie « ' + sectionTitle(d.id) + ' » non vide (' + d.count + ' article(s)) : déplacez d’abord ses articles / Category “' + sectionTitle(d.id) + '” is not empty (' + d.count + ' item(s)): move its items first';
     if (d.error === 'category_name_required') return 'Chaque catégorie doit avoir un nom français / Every category needs a French name';
     if (d.error === 'category_removed') return 'La catégorie d’origine de cet article a été supprimée : choisissez une autre catégorie / This item’s original category was removed: choose another category';
     if (d.error === 'bad_section') return 'Catégorie inconnue, rechargez la page / Unknown category, reload the page';
     if (d.error === 'bad_instagram') return 'Instagram : @nom ou lien instagram.com / Instagram: @name or instagram.com link';
     if (d.error === 'bad_maps') return 'Localisation : collez un lien Google Maps (https://maps.app.goo.gl/…) / Location: paste a Google Maps link';
+    if (d.error === 'bad_email') return 'E-mail invalide / Invalid e-mail';
     if (d.error === 'bad_phone') return 'Téléphone : chiffres, espaces et + seulement / Phone: digits, spaces and + only';
     if (d.error === 'name_and_section_required') return 'Le nom français est obligatoire / French name is required';
     return 'Erreur / Error (' + (d._status || 'réseau / network') + ')';
@@ -432,7 +444,7 @@
     var items = allItems(), secs = sections();
     var ids = secs.map(function(x){ return x.id; });
     // safety net: items whose category no longer exists stay visible here
-    if (items.some(function(it){ return ids.indexOf(it.section) === -1; })) secs = secs.concat([{ id: null, title_fr: 'Sans catégorie / No category' }]);
+    if (items.some(function(it){ return ids.indexOf(it.section) === -1; })) secs = secs.concat([{ id: null, title_fr: 'Sans catégorie — masqués du menu / No category — not on the menu' }]);
     secs.forEach(function(sec){
       var rows = items.filter(function(it){ return (sec.id === null ? ids.indexOf(it.section) === -1 : it.section === sec.id) && (!q || (it.name_fr + ' ' + it.name_en).toLowerCase().indexOf(q) !== -1); });
       if (q && !rows.length) return;
@@ -571,9 +583,11 @@
       var dn = el('button', 'small ghost', '↓'); dn.type = 'button'; dn.disabled = i === catDraft.length - 1; dn.setAttribute('aria-label', 'Descendre / Move down');
       dn.onclick = function(){ catDraft.splice(i + 1, 0, catDraft.splice(i, 1)[0]); renderCats(); };
       var del = el('button', 'small danger', 'Supprimer'); del.type = 'button'; del.setAttribute('aria-label', 'Supprimer / Remove');
-      del.disabled = n > 0 || catDraft.length === 1;
-      if (n > 0) del.title = 'Déplacez d’abord ses articles / Move its items first';
-      del.onclick = function(){ catDraft.splice(i, 1); renderCats(); };
+      del.disabled = catDraft.length === 1;
+      del.onclick = function(){
+        if (n > 0 && !confirm('Supprimer « ' + (c.title_fr || '') + ' » ? Ses ' + n + ' article(s) disparaîtront du menu client (ils restent dans l’admin sous « Sans catégorie »). / Delete “' + (c.title_fr || '') + '”? Its ' + n + ' item(s) will disappear from the customer menu (they stay in the admin under “No category”).')) return;
+        catDraft.splice(i, 1); renderCats();
+      };
       acts.appendChild(up); acts.appendChild(dn); acts.appendChild(del); top.appendChild(acts);
       row.appendChild(top);
       var two = el('div', 'two');
@@ -615,22 +629,26 @@
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('catEditor').hidden) closeCats(); });
 
   // ---------------- contact details
+  var CI = { title_fr:'ciTitleFr', title_en:'ciTitleEn', intro_fr:'ciIntroFr', intro_en:'ciIntroEn',
+             instagram:'ciInstagram', maps:'ciMaps', address:'ciAddress', phone:'ciPhone', email:'ciEmail' };
+  function fillContact(d){ Object.keys(CI).forEach(function(k){ $(CI[k]).value = d[k] || ''; }); }
   function loadContact(){
     $('ciErr').textContent = '';
     return fetch('/api/site', { cache:'no-store' }).then(function(r){
       return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; });
     }).then(function(d){
       if (d._status !== 200){ $('ciErr').textContent = errText(d); return; }
-      $('ciInstagram').value = d.instagram; $('ciMaps').value = d.maps; $('ciPhone').value = d.phone;
+      fillContact(d);
     }, function(){ $('ciErr').textContent = errText({}); });
   }
   $('contactForm').addEventListener('submit', function(e){
     e.preventDefault();
     var btn = $('ciSave'); btn.disabled = true; $('ciErr').textContent = 'Enregistrement… / Saving…';
-    api('PUT', '/api/site', { instagram: $('ciInstagram').value, maps: $('ciMaps').value, phone: $('ciPhone').value }).then(function(r){
+    var body = {}; Object.keys(CI).forEach(function(k){ body[k] = $(CI[k]).value; });
+    api('PUT', '/api/site', body).then(function(r){
       btn.disabled = false;
       if (!r.ok){ $('ciErr').textContent = errText(r); return; }
-      $('ciInstagram').value = r.instagram; $('ciMaps').value = r.maps; $('ciPhone').value = r.phone;
+      fillContact(r);
       $('ciErr').textContent = ''; toast('Enregistré / Saved');
     }).catch(function(){ btn.disabled = false; $('ciErr').textContent = errText({}); });
   });
