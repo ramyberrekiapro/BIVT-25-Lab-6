@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Chemex DZ</title>
+  <link rel="icon" href="/assets/img/mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/assets/js/admin.js" defer></script>
+</head>
+<body>
+  <!-- Login -->
+  <main class="login" id="login-view" hidden>
+    <form class="login__card" id="login-form" novalidate>
+      <img src="/assets/img/mark.svg" alt="" width="52" height="52">
+      <h1>Admin sign in</h1>
+      <p class="muted">Manage products, prices and business information.</p>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" autocomplete="current-password" required autofocus>
+      </label>
+      <p class="form-error" id="login-error" role="alert"></p>
+      <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+      <a class="link-muted" href="/">← Back to website</a>
+    </form>
+  </main>
+
+  <!-- App -->
+  <div class="app" id="app-view" hidden>
+    <header class="topbar">
+      <div class="topbar__brand">
+        <img src="/assets/img/mark.svg" alt="" width="34" height="34">
+        <div>
+          <strong data-brand>Chemex DZ</strong>
+          <span>Admin</span>
+        </div>
+      </div>
+      <div class="topbar__actions">
+        <a class="btn btn--ghost btn--sm" href="/" target="_blank" rel="noopener">View site ↗</a>
+        <button class="btn btn--ghost btn--sm" type="button" id="logout">Sign out</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-tab="products" aria-selected="true">Products</button>
+      <button class="tab" role="tab" data-tab="categories" aria-selected="false">Categories</button>
+      <button class="tab" role="tab" data-tab="content" aria-selected="false">Homepage</button>
+      <button class="tab" role="tab" data-tab="business" aria-selected="false">Business info</button>
+    </nav>
+
+    <main class="panel-wrap">
+      <!-- Products -->
+      <section class="panel" data-panel="products" role="tabpanel">
+        <div class="panel__head">
+          <div>
+            <h2>Products</h2>
+            <p class="muted" id="product-summary"></p>
+          </div>
+          <button class="btn btn--primary" type="button" id="add-product">+ Add product</button>
+        </div>
+        <div class="toolbar">
+          <input class="input" type="search" id="product-search" placeholder="Search products…" aria-label="Search products">
+          <select class="input" id="product-filter" aria-label="Filter by category"></select>
+        </div>
+        <ul class="list" id="product-list"></ul>
+      </section>
+
+      <!-- Categories -->
+      <section class="panel" data-panel="categories" role="tabpanel" hidden>
+        <div class="panel__head">
+          <div>
+            <h2>Categories</h2>
+            <p class="muted">Order here is the order shown on the website.</p>
+          </div>
+          <button class="btn btn--primary" type="button" id="add-category">+ Add category</button>
+        </div>
+        <ul class="list" id="category-list"></ul>
+      </section>
+
+      <!-- Homepage content -->
+      <section class="panel" data-panel="content" role="tabpanel" hidden>
+        <div class="panel__head">
+          <div>
+            <h2>Homepage</h2>
+            <p class="muted">Text and images of each homepage section.</p>
+          </div>
+        </div>
+        <form class="settings-form" id="content-form" novalidate>
+          <fieldset class="box">
+            <legend>Hero</legend>
+            <label class="field"><span>Small label above title</span><input name="hero_eyebrow" maxlength="120"></label>
+            <label class="field"><span>Main title</span><input name="hero_title" maxlength="160"></label>
+            <label class="field"><span>Subtitle</span><textarea name="hero_subtitle" rows="3" maxlength="400"></textarea></label>
+            <label class="field"><span>Button text</span><input name="hero_cta" maxlength="60"></label>
+            <div class="field"><span>Hero image <small>(portrait works best)</small></span><div class="image-field" data-image-setting="hero_image"></div></div>
+          </fieldset>
+          <fieldset class="box">
+            <legend>Our story</legend>
+            <label class="field"><span>Title</span><input name="about_title" maxlength="160"></label>
+            <label class="field"><span>Text <small>(blank line = new paragraph)</small></span><textarea name="about_text" rows="6" maxlength="2000"></textarea></label>
+            <div class="field"><span>Story image</span><div class="image-field" data-image-setting="about_image"></div></div>
+          </fieldset>
+          <fieldset class="box">
+            <legend>Section titles</legend>
+            <label class="field"><span>Signature products title</span><input name="featured_title" maxlength="120"></label>
+            <label class="field"><span>Products section title</span><input name="products_title" maxlength="120"></label>
+            <label class="field"><span>Products section intro</span><textarea name="products_intro" rows="2" maxlength="400"></textarea></label>
+            <label class="field"><span>“Why us” title</span><input name="why_title" maxlength="120"></label>
+            <label class="field"><span>Contact title</span><input name="contact_title" maxlength="160"></label>
+          </fieldset>
+          <fieldset class="box">
+            <legend>Why choose us <small>(empty rows are hidden)</small></legend>
+            <div id="highlights-editor" class="highlights"></div>
+          </fieldset>
+          <div class="savebar"><button class="btn btn--primary" type="submit">Save homepage</button></div>
+        </form>
+      </section>
+
+      <!-- Business info -->
+      <section class="panel" data-panel="business" role="tabpanel" hidden>
+        <div class="panel__head">
+          <div>
+            <h2>Business info</h2>
+            <p class="muted">Contact details and brand information. Empty fields are hidden on the website.</p>
+          </div>
+        </div>
+        <form class="settings-form" id="business-form" novalidate>
+          <fieldset class="box">
+            <legend>Brand</legend>
+            <div class="row">
+              <label class="field"><span>Business name</span><input name="brand_name" maxlength="80"></label>
+              <label class="field"><span>Currency label</span><input name="currency" maxlength="10" placeholder="DA"></label>
+            </div>
+            <label class="field"><span>Tagline</span><input name="tagline" maxlength="160"></label>
+            <label class="field"><span>Footer text</span><input name="footer_note" maxlength="300"></label>
+          </fieldset>
+          <fieldset class="box">
+            <legend>Contact</legend>
+            <div class="row">
+              <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="40" placeholder="+213 …"></label>
+              <label class="field"><span>Email</span><input name="email" type="email" maxlength="120"></label>
+            </div>
+            <label class="field"><span>Address</span><textarea name="address" rows="2" maxlength="300"></textarea></label>
+            <label class="field"><span>City / region</span><input name="city" maxlength="120"></label>
+            <label class="field"><span>Opening hours <small>(one line per day or range)</small></span><textarea name="hours" rows="4" maxlength="600" placeholder="Sat – Thu: 8:00 – 22:00&#10;Friday: 14:00 – 22:00"></textarea></label>
+          </fieldset>
+          <fieldset class="box">
+            <legend>Links</legend>
+            <label class="field"><span>Instagram URL</span><input name="instagram" type="url" maxlength="300" placeholder="https://www.instagram.com/…"></label>
+            <label class="field"><span>Google Maps link</span><input name="maps_url" type="url" maxlength="600" placeholder="https://maps.app.goo.gl/…"></label>
+          </fieldset>
+          <div class="savebar"><button class="btn btn--primary" type="submit">Save business info</button></div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Product editor -->
+  <dialog class="dialog" id="product-dialog">
+    <form method="dialog" class="dialog__form" id="product-form" novalidate>
+      <header class="dialog__head">
+        <h3 id="product-dialog-title">Product</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close">&times;</button>
+      </header>
+      <div class="dialog__body">
+        <div class="field"><span>Photo</span><div class="image-field" id="product-image"></div></div>
+        <label class="field"><span>Name *</span><input name="name" maxlength="120" required></label>
+        <div class="row">
+          <label class="field"><span>Category</span><select name="category_id"></select></label>
+          <label class="field"><span>Size / unit</span><input name="unit" maxlength="40" placeholder="e.g. 250 g, Cup"></label>
+        </div>
+        <label class="field"><span>Price <small>(leave empty for “On request”)</small></span><input name="price" type="number" min="0" step="1" inputmode="numeric"></label>
+        <label class="field"><span>Description</span><textarea name="description" rows="4" maxlength="1200"></textarea></label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" name="visible"> <span>Visible on website</span></label>
+          <label class="check"><input type="checkbox" name="featured"> <span>Show in “Signature” section</span></label>
+        </div>
+        <p class="form-error" id="product-error" role="alert"></p>
+      </div>
+      <footer class="dialog__foot">
+        <button class="btn btn--ghost" type="button" data-close>Cancel</button>
+        <button class="btn btn--primary" type="submit">Save product</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Category editor -->
+  <dialog class="dialog dialog--sm" id="category-dialog">
+    <form method="dialog" class="dialog__form" id="category-form" novalidate>
+      <header class="dialog__head">
+        <h3 id="category-dialog-title">Category</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close">&times;</button>
+      </header>
+      <div class="dialog__body">
+        <label class="field"><span>Name *</span><input name="name" maxlength="80" required></label>
+        <label class="field"><span>Description <small>(optional)</small></span><textarea name="description" rows="3" maxlength="400"></textarea></label>
+        <label class="check"><input type="checkbox" name="visible"> <span>Visible on website</span></label>
+        <p class="form-error" id="category-error" role="alert"></p>
+      </div>
+      <footer class="dialog__foot">
+        <button class="btn btn--ghost" type="button" data-close>Cancel</button>
+        <button class="btn btn--primary" type="submit">Save category</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Confirm -->
+  <dialog class="dialog dialog--sm" id="confirm-dialog">
+    <form method="dialog" class="dialog__form">
+      <div class="dialog__body">
+        <h3 id="confirm-title">Are you sure?</h3>
+        <p class="muted" id="confirm-text"></p>
+      </div>
+      <footer class="dialog__foot">
+        <button class="btn btn--ghost" value="cancel">Cancel</button>
+        <button class="btn btn--danger" value="ok">Delete</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+</body>
+</html>

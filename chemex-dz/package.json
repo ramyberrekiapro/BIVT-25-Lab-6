@@ -1,0 +1,15 @@
+{
+  "name": "chemex-dz",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev",
+    "db:migrate:local": "wrangler d1 migrations apply chemex-dz --local",
+    "db:migrate:remote": "wrangler d1 migrations apply chemex-dz --remote",
+    "db:seed:local": "wrangler d1 execute chemex-dz --local --file=seed/demo.sql",
+    "deploy": "wrangler pages deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

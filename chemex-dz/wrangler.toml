@@ -1,0 +1,19 @@
+# Cloudflare Pages project configuration.
+# Static files: ./public   Functions: ./functions   Database: D1 (binding DB)
+name = "chemex-dz"
+pages_build_output_dir = "./public"
+compatibility_date = "2025-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chemex-dz"
+# Replace with the id printed by: npx wrangler d1 create chemex-dz
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Optional: store images in R2 instead of D1. Create the bucket with
+#   npx wrangler r2 bucket create chemex-dz-media
+# then uncomment:
+# [[r2_buckets]]
+# binding = "MEDIA"
+# bucket_name = "chemex-dz-media"
