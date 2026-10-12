@@ -107,6 +107,7 @@
   .order .otable{font-weight:600;}
   .order .otime{color:var(--muted); font-size:.8rem; margin-left:auto;}
   .chip{border-radius:999px; padding:2px 9px; font-size:.72rem; font-weight:600; background:rgba(43,33,28,.08); color:var(--ink);}
+  .chip.new-src{background:var(--btn); color:#fff;}
   .chip.unpaid{background:rgba(197,107,75,.14); color:var(--accent);} .chip.paid{background:rgba(122,139,114,.2); color:#4d5f47;}
   .lines{width:100%; border-collapse:collapse; font-size:.88rem; margin-bottom:6px;}
   .lines td{padding:3px 0; vertical-align:top;}
@@ -838,7 +839,7 @@
       lastSync = d.now;
       if (fresh.length){
         beep();
-        toast('Nouvelle commande / New order — N° ' + fresh.map(function(o){ return orderNo(o.id) + ' (table ' + o.table + ')'; }).join(', '));
+        toast('Nouvelle commande / New order — N° ' + fresh.map(function(o){ return orderNo(o.id) + ' (table ' + o.table + (o.source === 'customer' ? ', client' : '') + ')'; }).join(', '));
       }
       if (d.orders.length) renderOrders();
     }, function(){ poll.busy = false; });
@@ -862,6 +863,7 @@
     h.appendChild(el('span', 'ono', 'N° ' + orderNo(o.id)));
     h.appendChild(el('span', 'otable', 'Table ' + o.table));
     h.appendChild(el('span', 'chip', statusLabel(o.status)));
+    if (o.source === 'customer') h.appendChild(el('span', 'chip new-src', 'Client / Customer'));
     h.appendChild(el('span', 'chip ' + (o.paid_at ? 'paid' : 'unpaid'), o.paid_at ? 'Payé / Paid' : 'Non payé / Unpaid'));
     h.appendChild(el('span', 'otime', fmtTime(o.created_at)));
     c.appendChild(h);

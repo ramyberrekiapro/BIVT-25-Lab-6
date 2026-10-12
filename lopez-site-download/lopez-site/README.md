@@ -1,6 +1,6 @@
 # Lopez — menu website + owner's admin
 
-- **Customer website** `/` — menu (French / English), likes, message form.
+- **Customer website** `/` — menu (French / English), likes, ordering from the table, message form.
 - **Owner's admin** `/admin/` — separate private page, not linked anywhere on the customer site,
   hidden from search engines, password required: Orders (café ordering / cash register),
   Messages, Menu (items and categories), Likes,
@@ -34,6 +34,7 @@ functions/api/            server routes
   sections.js             /api/sections         categories: add, remove, rename, reorder (owner)
   site.js                 /api/site             contact details: read (public) / write (owner)
   orders.js               /api/orders           café orders: create, list, status, cash payment (signed in)
+  order.js                /api/order            customers place an order from the menu (public)
   photo.js                /api/photo            photos uploaded in the admin
   admin/login.js          /api/admin/login      sign in -> session cookie
   admin/logout.js         /api/admin/logout
@@ -43,6 +44,7 @@ functions/api/            server routes
 lib/admin.js              password + session checks shared by all routes
 lib/sections.js           categories: built-in list + owner's changes
 lib/menu.js               current menu with prices, used to price orders on the server
+lib/orders.js             order storage shared by /api/orders and /api/order
 tools/                    maintenance scripts (not needed to run the site)
 ```
 
@@ -122,6 +124,21 @@ SELECT * FROM order_items WHERE order_id = 1;
 ```
 
 Staff sign in with the admin password, so they can also use the other admin tabs.
+
+### Customer orders (from the menu)
+
+On the customer menu every item with a price has a **+** button (also **Ajouter à la commande /
+Add to order** in the item's detail window). A bar at the bottom shows the number of items and the
+total; **Voir la commande / View order** → change quantities with − / + → table number →
+**Passer la commande / Place order**. The customer sees the order number; the order arrives on
+the admin **Orders** tab within about 5 seconds, marked **Client / Customer**, with status New,
+and is paid in cash to the staff as usual.
+
+- Prices are calculated on the server from the menu; items priced "Prix sur place" cannot be
+  ordered by customers (staff can add them from the admin).
+- At most 20 of one item per order; at most 30 customer orders per 10 minutes from one internet
+  connection (a café Wi-Fi counts as one connection).
+- The order being prepared is kept on the customer's phone until it is sent.
 
 ## Categories
 

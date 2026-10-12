@@ -86,6 +86,34 @@
   .item-modal .im-info{padding:18px 20px 22px;}
   .item-modal h3{font-family:'Playfair Display',serif; font-size:1.3rem; margin:0 0 8px; color:var(--ink);}
   .item-modal .im-price{color:var(--accent); font-weight:600; font-size:1rem; margin-bottom:12px;}
+  /* customer ordering */
+  .add-btn{flex:none; width:30px; height:30px; border-radius:50%; border:none; background:var(--btn); color:#fff; font:600 1.15rem/1 'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
+  .add-btn:hover{background:#687A61;}
+  .add-btn[hidden]{display:none;}
+  .add-btn.added{background:var(--accent);}
+  .order-btn{font:600 .9rem 'DM Sans',sans-serif; color:#fff; background:var(--btn); border:none; border-radius:999px; padding:11px 22px; cursor:pointer;}
+  .order-btn:hover{background:#687A61;} .order-btn:disabled{opacity:.6; cursor:default;}
+  .order-btn[hidden]{display:none;}
+  .im-add{margin-top:16px;}
+  .cart-bar{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); z-index:40;
+    display:flex; align-items:center; gap:12px; max-width:calc(100% - 28px); background:var(--dark); color:var(--bg); border:1px solid var(--gold);
+    border-radius:999px; padding:12px 20px; font:500 .9rem 'DM Sans',sans-serif; cursor:pointer; box-shadow:0 8px 24px rgba(43,33,28,.3); white-space:nowrap;}
+  .cart-bar[hidden]{display:none;}
+  .cart-bar b{font-weight:600; color:var(--gold);}
+  body.has-cart footer{padding-bottom:110px;}
+  .order-line{display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center; padding:9px 0; border-bottom:1px solid var(--line); font-size:.9rem;}
+  .order-line small{display:block; color:var(--muted); font-size:.78rem;}
+  .order-line .q{display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums;}
+  .order-line .q button{width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink); font:600 1rem 'DM Sans',sans-serif; cursor:pointer;}
+  .order-line .lt{min-width:5.5em; text-align:right; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .order-total{display:flex; justify-content:space-between; font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:600; margin:14px 0;}
+  .order-field{display:grid; gap:6px; font-size:.82rem; color:var(--muted); margin-bottom:10px;}
+  .order-field input{font:16px 'DM Sans',sans-serif; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; width:100%; max-width:10em;}
+  .order-field input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .order-note{font-size:.82rem; color:var(--muted); margin:0 0 14px;}
+  .order-modal .hp{position:absolute; left:-9999px; width:1px; height:1px; opacity:0;}
+  .order-done{text-align:center;}
+  .order-done .no{font-family:'Playfair Display',serif; font-size:2rem; color:var(--accent); margin:6px 0;}
   .item-modal .im-desc{font-size:.9rem; line-height:1.5; color:var(--muted); margin:0;}
 </style>
 </head>
@@ -1116,14 +1144,39 @@
       <h3 id="itemModalName"></h3>
       <div class="im-price" id="itemModalPrice"></div>
       <p class="im-desc" id="itemModalDesc"></p>
+      <button type="button" class="order-btn im-add" id="itemModalAdd" data-i18n="addToOrder" hidden>Ajouter à la commande</button>
     </div>
   </div>
 </div>
 
 
+<button type="button" class="cart-bar" id="cartBar" hidden><span id="cartBarInfo"></span><b data-i18n="cartView">Voir la commande</b></button>
+<div class="item-modal-overlay" id="orderOverlay">
+  <div class="item-modal order-modal" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+    <button class="im-close" id="orderClose" aria-label="Fermer">&times;</button>
+    <div class="im-info" id="orderForm">
+      <h3 id="orderTitle" data-i18n="orderTitle">Votre commande</h3>
+      <div id="orderLines"></div>
+      <div class="order-total"><span>Total</span><span id="orderTotal"></span></div>
+      <label class="order-field"><span data-i18n="tableLabel">Numéro de table</span><input id="orderTable" maxlength="12" inputmode="numeric" autocomplete="off"></label>
+      <input class="hp" id="orderHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="order-note" data-i18n="orderNote">Paiement en espèces auprès du personnel.</p>
+      <button type="button" class="order-btn" id="orderSubmit" data-i18n="placeOrder">Passer la commande</button>
+      <p class="form-status" id="orderStatus" role="status" aria-live="polite"></p>
+    </div>
+    <div class="im-info order-done" id="orderDone" hidden>
+      <h3 data-i18n="orderSent">Commande envoyée !</h3>
+      <div class="no" id="orderDoneNo"></div>
+      <p class="im-desc" id="orderDoneInfo"></p>
+      <p class="order-note" data-i18n="orderDoneNote">Le personnel prépare votre commande. Paiement en espèces.</p>
+      <button type="button" class="order-btn" id="orderDoneClose" data-i18n="close2">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
-  var EN = {"ui": {"tagline": "Savory brunch, mocktails & hot drinks — the menu, beautifully presented.", "location": "Location", "footer": "A selection of dishes from the Lopez menu", "like": "Like", "close": "Close", "msgBtn": "Message us", "contactIntro": "Feedback, a question, a reservation? Leave us a message.", "fName": "Name (optional)", "fContact": "Phone or email (optional)", "fMessage": "Your message", "fSend": "Send", "pricePlace": "Price at the café", "cMaps": "Location", "cMapsSub": "View on Google Maps", "cPhone": "Phone", "cEmail": "Email"}, "sections": {"brunch": "Savory Brunch", "jus": "Fruit Juices", "salades": "Salads", "gauffres": "Waffles", "crepes": "Crêpes", "painsperdus": "French Toast", "contact": "Write to us"}, "items": {"feta-bruschetta": {"name": "Feta bruschetta", "desc": "Toast, pesto sauce, artisanal feta, confit tomatoes, salad with balsamic dressing."}, "toast-buratta": {"name": "Burrata toast", "desc": "Toast, pesto sauce, artisanal stracciatella, confit tomatoes, salad with balsamic dressing."}, "pate-volaille-gervais": {"name": "Chicken pâté & Gervais", "desc": "Toast, artisanal chicken pâté, artisanal Gervais cream cheese, tomato salad, pesto sauce, balsamic sauce."}, "avocat-champignon": {"name": "Avocado & mushroom", "desc": "Toast, avocado guacamole, forestière mushroom sauce, fresh mushroom salad, tomato, balsamic sauce, pesto sauce."}, "croissant-sale": {"name": "Savory croissant", "desc": "Avocado guacamole, poached egg, salmon, tomato salad, balsamic sauce, pesto sauce."}, "amigos": {"desc": "Eggs, artisanal Gouda cheese, artisanal Gruyère cheese, tomato & cucumber salad."}, "omelette-champignon": {"name": "Mushroom omelette"}, "avocat-saumon": {"name": "Avocado & salmon", "desc": "Toast, avocado guacamole, salmon, poached egg, tomato salad, balsamic sauce, cucumber, pesto sauce."}, "omelette-fromage": {"name": "Cheese omelette"}, "pain-perdu-sale": {"name": "Savory French toast", "desc": "Avocado guacamole, soft-boiled eggs, salmon, tomato & cucumber salad."}, "sun-flower": {"desc": "Pineapple, vanilla, orange."}, "pink-lady": {"desc": "Coconut, red berries."}, "coco-moon": {"desc": "Grenadine, lemon, pineapple."}, "bora-bora": {"desc": "Passion fruit."}, "paradis": {"desc": "Orange, mango."}, "black-sea": {"desc": "Coca-Cola, blue curaçao."}, "pina-colada": {"desc": "Coconut, milk, pineapple."}, "secret-garden": {"desc": "Peach, ginger, sparkling water."}, "cherry-spark": {"desc": "Cherry, pineapple."}, "marguarita": {"desc": "Orange, lemon."}, "cafe-caps-lor-nespresso": {"name": "Coffee capsule — L'Or / Nespresso"}, "cafe-americano": {"name": "Americano"}, "lait-chaud": {"name": "Hot milk"}, "cappuccino-classique": {"name": "Classic cappuccino"}, "latte-macchiato-2": {"desc": "Caramel / vanilla / hazelnut."}, "chocolat-au-lait": {"name": "Chocolate milk"}, "chocolat-chaud": {"name": "Hot chocolate"}, "mojito-classic": {"name": "Classic mojito"}, "fruit-de-bois": {"name": "Forest fruits"}, "frap-pistache": {"name": "Pistachio"}, "vitamine-lopez": {"name": "Vitamine Lopez", "desc": "Banana, date, dried fruit, honey."}, "jus-avocat": {"name": "Avocado"}, "smoothie-fraise": {"name": "Strawberry"}, "smoothie-mangue-ananas": {"name": "Mango pineapple"}, "ice-matcha": {"desc": "Mango / red berries / strawberry."}, "affogato": {"desc": "Choice of vanilla or chocolate ice cream."}, "salade-burrata": {"name": "Burrata salad"}, "salade-cesar": {"name": "Caesar salad"}, "gauffre-pistache": {"name": "Pistachio waffle"}, "gauffre-chocolat": {"name": "Chocolate waffle"}, "pancake-chocolat": {"name": "Chocolate pancake"}, "crepe-pistache": {"name": "Pistachio crêpe"}, "pain-perdu-fruits-rouges": {"name": "Red berry French toast", "desc": "Homemade brioche, red berry sauce, homemade vanilla cream."}, "pain-perdu-tiramisu": {"name": "Tiramisu French toast", "desc": "Homemade brioche, coffee sauce, cocoa, mascarpone whipped cream."}, "tagliatelle-4-fromages": {"name": "Four-cheese tagliatelle"}, "penne-bolognaise": {"name": "Penne bolognese"}, "mojito-ananas": {"name": "Pineapple mojito"}, "mojito-fraise": {"name": "Strawberry mojito"}, "mojito-fruit-rouge": {"name": "Red berry mojito"}, "mojito-kiwi": {"name": "Kiwi mojito"}, "frap-chocolat": {"name": "Chocolate"}, "frap-caramel": {"name": "Salted butter caramel"}, "frap-vanille": {"name": "Vanilla"}, "frap-oreo": {"name": "Oreo"}, "frap-yaourt": {"name": "Yogurt"}, "milk-chocolat": {"name": "Chocolate"}, "milk-chocolat-banane": {"name": "Chocolate banana"}, "milk-vanille": {"name": "Vanilla"}, "milk-pistache": {"name": "Pistachio"}, "jus-orange": {"name": "Orange"}, "jus-citron": {"name": "Lemon"}, "jus-citron-menthe": {"name": "Lemon mint"}, "jus-banane": {"name": "Banana"}, "jus-ananas": {"name": "Pineapple"}, "jus-mangue": {"name": "Mango"}, "jus-fraise": {"name": "Strawberry"}, "ice-americano": {"name": "Iced americano"}, "ice-tea": {"name": "Iced tea", "desc": "Peach / lemon / strawberry / caramel / vanilla / hazelnut."}, "ice-latte": {"name": "Iced latte", "desc": "Caramel / vanilla / hazelnut / cinnamon."}, "ice-spanish-latte": {"name": "Iced Spanish latte"}, "crepe-chocolat": {"name": "Chocolate crêpe"}, "chocolate-fondant": {"name": "Chocolate fondant"}, "toffee-datte": {"name": "Sticky toffee date pudding", "desc": "Date pudding, toffee sauce, scoop of vanilla ice cream, walnuts."}, "pain-perdu-caramel-banane": {"name": "Banana caramel French toast", "desc": "Homemade brioche, salted butter caramel, caramelised banana, crushed hazelnuts, scoop of vanilla ice cream."}, "fondant-chocolat": {"name": "Chocolate fondant"}, "pain-perdu-peche": {"name": "Peach French toast"}, "pain-perdu-figues": {"name": "Fig French toast"}, "pain-perdu-pommes-cannelle": {"name": "Apple & cinnamon French toast"}}};
+  var EN = {"ui": {"tagline": "Savory brunch, mocktails & hot drinks — the menu, beautifully presented.", "location": "Location", "footer": "A selection of dishes from the Lopez menu", "like": "Like", "close": "Close", "msgBtn": "Message us", "contactIntro": "Feedback, a question, a reservation? Leave us a message.", "fName": "Name (optional)", "fContact": "Phone or email (optional)", "fMessage": "Your message", "fSend": "Send", "pricePlace": "Price at the café", "cMaps": "Location", "cMapsSub": "View on Google Maps", "cPhone": "Phone", "cEmail": "Email", "addToOrder": "Add to order", "cartView": "View order", "orderTitle": "Your order", "tableLabel": "Table number", "orderNote": "Pay in cash to the staff.", "placeOrder": "Place order", "orderSent": "Order sent!", "orderDoneNote": "The staff is preparing your order. Payment in cash.", "close2": "Close"}, "sections": {"brunch": "Savory Brunch", "jus": "Fruit Juices", "salades": "Salads", "gauffres": "Waffles", "crepes": "Crêpes", "painsperdus": "French Toast", "contact": "Write to us"}, "items": {"feta-bruschetta": {"name": "Feta bruschetta", "desc": "Toast, pesto sauce, artisanal feta, confit tomatoes, salad with balsamic dressing."}, "toast-buratta": {"name": "Burrata toast", "desc": "Toast, pesto sauce, artisanal stracciatella, confit tomatoes, salad with balsamic dressing."}, "pate-volaille-gervais": {"name": "Chicken pâté & Gervais", "desc": "Toast, artisanal chicken pâté, artisanal Gervais cream cheese, tomato salad, pesto sauce, balsamic sauce."}, "avocat-champignon": {"name": "Avocado & mushroom", "desc": "Toast, avocado guacamole, forestière mushroom sauce, fresh mushroom salad, tomato, balsamic sauce, pesto sauce."}, "croissant-sale": {"name": "Savory croissant", "desc": "Avocado guacamole, poached egg, salmon, tomato salad, balsamic sauce, pesto sauce."}, "amigos": {"desc": "Eggs, artisanal Gouda cheese, artisanal Gruyère cheese, tomato & cucumber salad."}, "omelette-champignon": {"name": "Mushroom omelette"}, "avocat-saumon": {"name": "Avocado & salmon", "desc": "Toast, avocado guacamole, salmon, poached egg, tomato salad, balsamic sauce, cucumber, pesto sauce."}, "omelette-fromage": {"name": "Cheese omelette"}, "pain-perdu-sale": {"name": "Savory French toast", "desc": "Avocado guacamole, soft-boiled eggs, salmon, tomato & cucumber salad."}, "sun-flower": {"desc": "Pineapple, vanilla, orange."}, "pink-lady": {"desc": "Coconut, red berries."}, "coco-moon": {"desc": "Grenadine, lemon, pineapple."}, "bora-bora": {"desc": "Passion fruit."}, "paradis": {"desc": "Orange, mango."}, "black-sea": {"desc": "Coca-Cola, blue curaçao."}, "pina-colada": {"desc": "Coconut, milk, pineapple."}, "secret-garden": {"desc": "Peach, ginger, sparkling water."}, "cherry-spark": {"desc": "Cherry, pineapple."}, "marguarita": {"desc": "Orange, lemon."}, "cafe-caps-lor-nespresso": {"name": "Coffee capsule — L'Or / Nespresso"}, "cafe-americano": {"name": "Americano"}, "lait-chaud": {"name": "Hot milk"}, "cappuccino-classique": {"name": "Classic cappuccino"}, "latte-macchiato-2": {"desc": "Caramel / vanilla / hazelnut."}, "chocolat-au-lait": {"name": "Chocolate milk"}, "chocolat-chaud": {"name": "Hot chocolate"}, "mojito-classic": {"name": "Classic mojito"}, "fruit-de-bois": {"name": "Forest fruits"}, "frap-pistache": {"name": "Pistachio"}, "vitamine-lopez": {"name": "Vitamine Lopez", "desc": "Banana, date, dried fruit, honey."}, "jus-avocat": {"name": "Avocado"}, "smoothie-fraise": {"name": "Strawberry"}, "smoothie-mangue-ananas": {"name": "Mango pineapple"}, "ice-matcha": {"desc": "Mango / red berries / strawberry."}, "affogato": {"desc": "Choice of vanilla or chocolate ice cream."}, "salade-burrata": {"name": "Burrata salad"}, "salade-cesar": {"name": "Caesar salad"}, "gauffre-pistache": {"name": "Pistachio waffle"}, "gauffre-chocolat": {"name": "Chocolate waffle"}, "pancake-chocolat": {"name": "Chocolate pancake"}, "crepe-pistache": {"name": "Pistachio crêpe"}, "pain-perdu-fruits-rouges": {"name": "Red berry French toast", "desc": "Homemade brioche, red berry sauce, homemade vanilla cream."}, "pain-perdu-tiramisu": {"name": "Tiramisu French toast", "desc": "Homemade brioche, coffee sauce, cocoa, mascarpone whipped cream."}, "tagliatelle-4-fromages": {"name": "Four-cheese tagliatelle"}, "penne-bolognaise": {"name": "Penne bolognese"}, "mojito-ananas": {"name": "Pineapple mojito"}, "mojito-fraise": {"name": "Strawberry mojito"}, "mojito-fruit-rouge": {"name": "Red berry mojito"}, "mojito-kiwi": {"name": "Kiwi mojito"}, "frap-chocolat": {"name": "Chocolate"}, "frap-caramel": {"name": "Salted butter caramel"}, "frap-vanille": {"name": "Vanilla"}, "frap-oreo": {"name": "Oreo"}, "frap-yaourt": {"name": "Yogurt"}, "milk-chocolat": {"name": "Chocolate"}, "milk-chocolat-banane": {"name": "Chocolate banana"}, "milk-vanille": {"name": "Vanilla"}, "milk-pistache": {"name": "Pistachio"}, "jus-orange": {"name": "Orange"}, "jus-citron": {"name": "Lemon"}, "jus-citron-menthe": {"name": "Lemon mint"}, "jus-banane": {"name": "Banana"}, "jus-ananas": {"name": "Pineapple"}, "jus-mangue": {"name": "Mango"}, "jus-fraise": {"name": "Strawberry"}, "ice-americano": {"name": "Iced americano"}, "ice-tea": {"name": "Iced tea", "desc": "Peach / lemon / strawberry / caramel / vanilla / hazelnut."}, "ice-latte": {"name": "Iced latte", "desc": "Caramel / vanilla / hazelnut / cinnamon."}, "ice-spanish-latte": {"name": "Iced Spanish latte"}, "crepe-chocolat": {"name": "Chocolate crêpe"}, "chocolate-fondant": {"name": "Chocolate fondant"}, "toffee-datte": {"name": "Sticky toffee date pudding", "desc": "Date pudding, toffee sauce, scoop of vanilla ice cream, walnuts."}, "pain-perdu-caramel-banane": {"name": "Banana caramel French toast", "desc": "Homemade brioche, salted butter caramel, caramelised banana, crushed hazelnuts, scoop of vanilla ice cream."}, "fondant-chocolat": {"name": "Chocolate fondant"}, "pain-perdu-peche": {"name": "Peach French toast"}, "pain-perdu-figues": {"name": "Fig French toast"}, "pain-perdu-pommes-cannelle": {"name": "Apple & cinnamon French toast"}}};
   var LIKES_KEY = 'lopez-liked-items';
   function getLikes(){
     try{ return JSON.parse(localStorage.getItem(LIKES_KEY) || '[]'); }catch(e){ return []; }
@@ -1221,6 +1274,7 @@
       var img = card.querySelector('.ph img'); if (img) img.alt = name;
     });
     document.querySelectorAll('.like-btn').forEach(function(b){ b.setAttribute('aria-label', T.ui.like); });
+    orderLang();
     document.getElementById('itemModalClose').setAttribute('aria-label', T.ui.close);
     document.querySelectorAll('.lang-switch button').forEach(function(b){
       b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
@@ -1265,6 +1319,7 @@
     var descText = card.querySelector('.desc').textContent.trim();
     mDesc.textContent = (descText === '' || descText === String.fromCharCode(160)) ? '' : descText;
     currentCard = card;
+    document.getElementById('itemModalAdd').hidden = !orderable(card);
     setLikedUI(mLike, liked.indexOf(card.getAttribute('data-id')) !== -1);
     showCount(mLike, card.getAttribute('data-id'));
     overlay.classList.add('show');
@@ -1368,7 +1423,11 @@
   }
   fetch('/api/menu', { cache: 'no-store' })
     .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(d){ if (!d || !d.items) return; applySections(d.sections || []); applyMenuEdits(d.items); dropRemovedSections(d.sections || []); })
+    .then(function(d){
+      if (!d || !d.items) return;
+      applySections(d.sections || []); applyMenuEdits(d.items); dropRemovedSections(d.sections || []);
+      menuReady = true; refreshOrdering();  // ordering needs the server: only offered once it answered
+    })
     .catch(function(){});
 
   // ---- Contact section (title, text, Instagram, Google Maps, address, phone, e-mail) from /admin/;
@@ -1420,6 +1479,151 @@
       .catch(function(){ setStatus('fail', 'bad'); })
       .then(function(){ btn.disabled = false; });
   });
+
+  // ---- Customer ordering: add items, quantities, table number, total -> /api/order (D1).
+  // The café receives the order on /admin/ (Orders). Cash only, paid to the staff.
+  var ORDER_TXT = {
+    fr: { items:'article(s)', add:'Ajouter à la commande', remove:'Retirer', less:'Moins', more:'Plus', table:'Indiquez votre numéro de table.',
+          empty:'Votre commande est vide.', sending:'Envoi…', fail:'L’envoi a échoué. Réessayez ou appelez un serveur.',
+          rate:'Trop de commandes envoyées, appelez un serveur.', gone:'Un article n’est plus disponible, il a été retiré. Vérifiez et renvoyez.',
+          orderNo:'Commande N°', tableShort:'Table' },
+    en: { items:'item(s)', add:'Add to order', remove:'Remove', less:'Less', more:'More', table:'Please enter your table number.',
+          empty:'Your order is empty.', sending:'Sending…', fail:'Sending failed. Please try again or call a waiter.',
+          rate:'Too many orders sent, please call a waiter.', gone:'An item is no longer available and was removed. Please check and send again.',
+          orderNo:'Order No.', tableShort:'Table' }
+  };
+  var CART_KEY = 'lopez-cart', TABLE_KEY = 'lopez-table', MAX_QTY = 20;
+  var menuReady = false;
+  var cart = [];  // [{ id, qty }] kept on this device until the order is sent
+  try{ cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]').filter(function(l){ return l && typeof l.id === 'string' && l.qty > 0; }); }catch(e){ cart = []; }
+  function saveCart(){ try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){} }
+  function OT(k){ return ORDER_TXT[lang][k]; }
+  function priceOf(id){
+    var f = FR.items[id];
+    var m = f && String(f.price).trim().match(/^(\d{1,3}(?:[ ,.\u00a0\u202f]\d{3})+|\d{1,7})\s*(?:DA|DZD|دج)?$/i);
+    return m ? parseInt(m[1].replace(/\D/g, ''), 10) : null;
+  }
+  function money(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' DA'; }
+  function itemName(id){ var t = (lang === 'en' ? EN.items[id] : null) || {}; return t.name || (FR.items[id] || {}).name || id; }
+  function cardOf(id){ return document.querySelector('.card[data-id="' + id + '"]'); }
+  // an item can be ordered when it is shown on the menu and has a price in DA
+  function orderable(card){
+    if (!menuReady || !card || card.hidden) return false;
+    var sec = card.closest('section.cat');
+    return !!sec && !sec.hidden && priceOf(card.getAttribute('data-id')) !== null;
+  }
+  function addBtn(card){
+    var row = card.querySelector('.bottom-row'), b = row && row.querySelector('.add-btn');
+    if (!row) return null;
+    if (!b){
+      b = document.createElement('button'); b.type = 'button'; b.className = 'add-btn'; b.textContent = '+'; b.hidden = true;
+      b.addEventListener('click', function(e){ e.stopPropagation(); addToCart(card.getAttribute('data-id')); });
+      row.appendChild(b);
+    }
+    return b;
+  }
+  function refreshOrdering(){
+    if (!menuReady) return;
+    document.querySelectorAll('.card').forEach(function(card){
+      var b = addBtn(card); if (!b) return;
+      var id = card.getAttribute('data-id');
+      b.hidden = !orderable(card);
+      b.classList.toggle('added', cart.some(function(l){ return l.id === id; }));
+      b.setAttribute('aria-label', OT('add') + ' — ' + itemName(id));
+    });
+    var before = cart.length;
+    cart = cart.filter(function(l){ return orderable(cardOf(l.id)); });
+    if (cart.length !== before) saveCart();
+    renderCartBar();
+  }
+  function cartTotal(){ return cart.reduce(function(s, l){ return s + priceOf(l.id) * l.qty; }, 0); }
+  function renderCartBar(){
+    var n = cart.reduce(function(s, l){ return s + l.qty; }, 0);
+    var bar = document.getElementById('cartBar');
+    bar.hidden = !n;
+    document.body.classList.toggle('has-cart', !!n);
+    document.getElementById('cartBarInfo').textContent = n + ' ' + OT('items') + ' · ' + money(cartTotal());
+  }
+  function addToCart(id){
+    var l = cart.filter(function(x){ return x.id === id; })[0];
+    if (l) l.qty = Math.min(MAX_QTY, l.qty + 1); else cart.push({ id: id, qty: 1 });
+    saveCart(); refreshOrdering();
+    var b = cardOf(id) && cardOf(id).querySelector('.add-btn');
+    if (b){ b.classList.add('added'); }
+  }
+  document.getElementById('itemModalAdd').addEventListener('click', function(){
+    if (currentCard){ addToCart(currentCard.getAttribute('data-id')); closeItemModal(); }
+  });
+
+  var orderOverlay = document.getElementById('orderOverlay');
+  var orderStatus = document.getElementById('orderStatus');
+  function setOrderStatus(key, cls){ orderStatus.textContent = key ? OT(key) : ''; orderStatus.className = 'form-status' + (cls ? ' ' + cls : ''); }
+  function renderOrder(){
+    var box = document.getElementById('orderLines'); box.textContent = '';
+    cart.forEach(function(l){
+      var row = document.createElement('div'); row.className = 'order-line';
+      var nm = document.createElement('div'); nm.textContent = itemName(l.id);
+      var sm = document.createElement('small'); sm.textContent = money(priceOf(l.id)); nm.appendChild(sm);
+      var q = document.createElement('div'); q.className = 'q';
+      var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', l.qty > 1 ? OT('less') : OT('remove'));
+      minus.onclick = function(){ l.qty--; if (l.qty < 1) cart.splice(cart.indexOf(l), 1); saveCart(); refreshOrdering(); renderOrder(); };
+      var qty = document.createElement('span'); qty.textContent = l.qty;
+      var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', OT('more'));
+      plus.disabled = l.qty >= MAX_QTY;
+      plus.onclick = function(){ l.qty = Math.min(MAX_QTY, l.qty + 1); saveCart(); refreshOrdering(); renderOrder(); };
+      q.appendChild(minus); q.appendChild(qty); q.appendChild(plus);
+      var lt = document.createElement('div'); lt.className = 'lt'; lt.textContent = money(priceOf(l.id) * l.qty);
+      row.appendChild(nm); row.appendChild(q); row.appendChild(lt);
+      box.appendChild(row);
+    });
+    document.getElementById('orderTotal').textContent = money(cartTotal());
+    if (!cart.length) setOrderStatus('empty');
+  }
+  function openOrder(){
+    document.getElementById('orderForm').hidden = false; document.getElementById('orderDone').hidden = true;
+    var t = document.getElementById('orderTable');
+    if (!t.value){ try{ t.value = localStorage.getItem(TABLE_KEY) || ''; }catch(e){} }
+    setOrderStatus(''); renderOrder();
+    orderOverlay.classList.add('show');
+  }
+  function closeOrder(){ orderOverlay.classList.remove('show'); }
+  document.getElementById('cartBar').addEventListener('click', openOrder);
+  document.getElementById('orderTable').addEventListener('input', function(){ setOrderStatus(''); });
+  document.getElementById('orderClose').addEventListener('click', closeOrder);
+  document.getElementById('orderDoneClose').addEventListener('click', closeOrder);
+  orderOverlay.addEventListener('click', function(e){ if (e.target === orderOverlay) closeOrder(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeOrder(); closeItemModal(); } });
+  document.getElementById('orderSubmit').addEventListener('click', function(){
+    var table = document.getElementById('orderTable').value.trim();
+    if (!cart.length){ setOrderStatus('empty', 'bad'); return; }
+    if (!table){ setOrderStatus('table', 'bad'); document.getElementById('orderTable').focus(); return; }
+    var btn = this; btn.disabled = true; setOrderStatus('sending');
+    var body = { table: table, items: cart.map(function(l){ return { id: l.id, qty: l.qty }; }), website: document.getElementById('orderHp').value };
+    fetch('/api/order', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ d._status = r.status; return d; }); })
+      .then(function(d){
+        btn.disabled = false;
+        if (d.ok && d.order){
+          try{ localStorage.setItem(TABLE_KEY, table); }catch(e){}
+          cart = []; saveCart(); refreshOrdering();
+          document.getElementById('orderDoneNo').textContent = OT('orderNo') + ' ' + String(d.order.id).padStart(4, '0');
+          document.getElementById('orderDoneInfo').textContent = OT('tableShort') + ' ' + d.order.table + ' · Total ' + money(d.order.total);
+          document.getElementById('orderForm').hidden = true; document.getElementById('orderDone').hidden = false;
+          return;
+        }
+        if (d.error === 'item_unavailable'){
+          cart = cart.filter(function(l){ return l.id !== d.id; }); saveCart(); refreshOrdering(); renderOrder(); setOrderStatus('gone', 'bad'); return;
+        }
+        if (d.error === 'table_required'){ setOrderStatus('table', 'bad'); return; }
+        setOrderStatus(d._status === 429 ? 'rate' : 'fail', 'bad');
+      })
+      .catch(function(){ btn.disabled = false; setOrderStatus('fail', 'bad'); });
+  });
+  function orderLang(){
+    if (!ORDER_TXT) return;  // first call happens before this part of the script has run
+    refreshOrdering();
+    if (orderOverlay.classList.contains('show') && !document.getElementById('orderForm').hidden) renderOrder();
+  }
 
   applyLang(lang);
 })();
