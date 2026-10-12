@@ -137,14 +137,16 @@
   @media print{
     body{background:#fff !important; margin:0;}
     body > *:not(#receipt){display:none !important;}
-    #receipt{display:block !important; color:#000; font:12px/1.35 'Courier New',Courier,monospace; width:72mm; margin:0 auto; padding:2mm 0;}
-    #receipt.w58{width:48mm; font-size:10.5px;}
-    #receipt .rlogo{width:55%; margin:0 auto 2mm; display:block; color:#000;}
+    /* the receipt takes the printable width of the paper (never wider), so nothing falls off the
+       right edge on a 58 mm roll, a small preview page or a normal printer */
+    #receipt{display:block !important; color:#000; font:12px/1.35 'Courier New',Courier,monospace; width:100%; max-width:72mm; margin:0 auto; padding:2mm 0; box-sizing:border-box; overflow-wrap:anywhere;}
+    #receipt.w58{max-width:48mm; font-size:10px;}
+    #receipt .rlogo{width:55%; max-width:100%; height:auto; margin:0 auto 2mm; display:block; color:#000;}
     #receipt .c{text-align:center;}
     #receipt hr{border:none; border-top:1px dashed #000; margin:2mm 0;}
-    #receipt table{width:100%; border-collapse:collapse;}
-    #receipt td{padding:0; vertical-align:top;}
-    #receipt td.r{text-align:right; white-space:nowrap;}
+    #receipt table{width:100%; border-collapse:collapse; table-layout:fixed;}
+    #receipt td{padding:0; vertical-align:top; overflow-wrap:anywhere;}
+    #receipt td.r{text-align:right; width:48%; padding-left:1mm;}
     #receipt .tot td{font-weight:700; font-size:1.15em; padding-top:1mm;}
     #receipt .nm{padding-top:1mm;}
   }
@@ -1073,7 +1075,8 @@
     r.appendChild(s2); r.appendChild(el('hr'));
     if (o.paid_at) r.appendChild(el('div', 'c', 'Payé le / Paid ' + fmtTime(o.paid_at)));
     r.appendChild(el('div', 'c', 'Merci ! / Thank you!'));
-    window.print();
+    // print once the receipt is laid out (some browsers otherwise print the previous layout)
+    requestAnimationFrame(function(){ setTimeout(function(){ window.print(); }, 50); });
   }
 
   // ---------------- likes
