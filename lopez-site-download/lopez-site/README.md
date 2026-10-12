@@ -2,7 +2,8 @@
 
 - **Customer website** `/` — menu (French / English), likes, message form.
 - **Owner's admin** `/admin/` — separate private page, not linked anywhere on the customer site,
-  hidden from search engines, password required: Messages, Menu (items and categories), Likes,
+  hidden from search engines, password required: Orders (café ordering / cash register),
+  Messages, Menu (items and categories), Likes,
   Contact (section title and text, Instagram, Google Maps link, address, phone, e-mail).
 
 Both use the same server API (`/api/...`) and the same Cloudflare **D1** database:
@@ -32,6 +33,7 @@ functions/api/            server routes
   menu.js                 /api/menu             menu changes + categories: read (public) / write (owner)
   sections.js             /api/sections         categories: add, remove, rename, reorder (owner)
   site.js                 /api/site             contact details: read (public) / write (owner)
+  orders.js               /api/orders           café orders: create, list, status, cash payment (signed in)
   photo.js                /api/photo            photos uploaded in the admin
   admin/login.js          /api/admin/login      sign in -> session cookie
   admin/logout.js         /api/admin/logout
@@ -40,6 +42,7 @@ functions/api/            server routes
   _middleware.js          turns unexpected errors into JSON errors for the admin
 lib/admin.js              password + session checks shared by all routes
 lib/sections.js           categories: built-in list + owner's changes
+lib/menu.js               current menu with prices, used to price orders on the server
 tools/                    maintenance scripts (not needed to run the site)
 ```
 
@@ -89,6 +92,36 @@ DELETE FROM admin_settings WHERE key = 'password';
 
 Then sign in with `ADMIN_PASSWORD` (e.g. `0000`) and choose a new password.
 (To use a different temporary password, change the `ADMIN_PASSWORD` secret and retry the deployment.)
+
+## Orders (cash only)
+
+Admin → **Commandes / Orders** (the first tab after signing in):
+
+1. **+ Nouvelle commande / New order** → table number → tap **+** on the items (search box at the
+   top), adjust quantities with − / + → the total is calculated → **Créer la commande / Create
+   order**. Each order gets the next order number (N° 0001, 0002, …; never reused).
+   Items whose menu price is "Prix sur place" ask for their price.
+2. New orders appear by themselves on every signed-in screen within about 5 seconds (with a short
+   beep and a counter on the tab), no refresh needed.
+3. Status buttons: **Nouvelle / New → En préparation / Preparing → Prête / Ready → Payée / Paid →
+   Terminée / Completed**. Paid and Completed need a recorded payment.
+4. **Encaisser / Take cash** → amount received (or a quick amount button) → the change is shown →
+   **Valider le paiement / Confirm payment**. The order becomes Paid. Cash only.
+5. **Imprimer le ticket / Print receipt** → the browser's print window. Choose the café receipt
+   printer (paper width: **Ticket 80 mm / 58 mm** above the list, remembered on that device) or
+   any normal printer.
+
+**En cours / Active** shows orders not yet completed; **Toutes / All** shows every order.
+Prices are taken from the menu on the server when the order is created and stored with the order,
+so later menu price changes do not change past orders. Stored in the D1 tables `orders` and
+`order_items`:
+
+```sql
+SELECT * FROM orders ORDER BY id DESC LIMIT 20;
+SELECT * FROM order_items WHERE order_id = 1;
+```
+
+Staff sign in with the admin password, so they can also use the other admin tabs.
 
 ## Categories
 

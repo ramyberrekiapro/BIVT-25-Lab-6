@@ -94,6 +94,61 @@
   /* contact */
   .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 16px; max-width:560px;}
 
+  /* orders */
+  .seg{display:inline-flex; border:1px solid var(--btn); border-radius:999px; overflow:hidden;}
+  .seg button{border:none; border-radius:0; background:transparent; color:var(--ink); padding:6px 12px; font-size:.78rem;}
+  .seg button[aria-pressed="true"]{background:var(--btn); color:#fff;}
+  .order{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:12px;}
+  .order.st-new{border-left-color:var(--accent);} .order.st-preparing{border-left-color:var(--gold);}
+  .order.st-ready{border-left-color:var(--btn);} .order.st-paid{border-left-color:var(--dark);}
+  .order.st-completed{opacity:.7;}
+  .order .oh{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin-bottom:8px;}
+  .order .ono{font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700;}
+  .order .otable{font-weight:600;}
+  .order .otime{color:var(--muted); font-size:.8rem; margin-left:auto;}
+  .chip{border-radius:999px; padding:2px 9px; font-size:.72rem; font-weight:600; background:rgba(43,33,28,.08); color:var(--ink);}
+  .chip.unpaid{background:rgba(197,107,75,.14); color:var(--accent);} .chip.paid{background:rgba(122,139,114,.2); color:#4d5f47;}
+  .lines{width:100%; border-collapse:collapse; font-size:.88rem; margin-bottom:6px;}
+  .lines td{padding:3px 0; vertical-align:top;}
+  .lines td.q{width:2.6em; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .lines td.u, .lines td.t{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; padding-left:10px;}
+  .lines td.u{color:var(--muted); font-size:.8rem;}
+  .lines tr.sum td{border-top:1px solid var(--line); padding-top:6px; font-weight:700;}
+  .lines tr.cash td{color:var(--muted); font-size:.82rem;}
+  .ostat{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0;}
+  .ostat button{background:transparent; color:var(--ink); border-color:var(--line);}
+  .ostat button[aria-pressed="true"]{background:var(--dark); color:var(--bg); border-color:var(--dark);}
+  .pick-sec{font-weight:600; color:var(--accent); font-size:.85rem; margin:12px 0 4px;}
+  .pick{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:.9rem;}
+  .pick .pp{color:var(--muted); font-size:.8rem; white-space:nowrap;}
+  .picker{max-height:38vh; overflow-y:auto; margin-bottom:12px; border:1px solid var(--line); border-radius:10px; padding:0 10px; background:var(--card);}
+  .cart-line{display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line); font-size:.9rem;}
+  .cart-line .qty{display:flex; align-items:center; gap:6px;}
+  .cart-line .qty button{min-width:32px; padding:4px 0;}
+  .cart-line .lt{min-width:6.5em; text-align:right; font-variant-numeric:tabular-nums; font-weight:600;}
+  .cart-line input{width:7em; margin:4px 0 0; padding:6px 8px;}
+  .bigtotal{display:flex; justify-content:space-between; font-size:1.15rem; font-weight:700; margin:12px 0;}
+  .cashq{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+  .change{font-size:1.4rem; font-weight:700; color:#4d5f47; margin:4px 0 14px;}
+  #receipt{display:none;}
+
+  /* receipt printing (café receipt printer 80/58 mm, or any printer) */
+  @media print{
+    body{background:#fff !important; margin:0;}
+    body > *:not(#receipt){display:none !important;}
+    #receipt{display:block !important; color:#000; font:12px/1.35 'Courier New',Courier,monospace; width:72mm; margin:0 auto; padding:2mm 0;}
+    #receipt.w58{width:48mm; font-size:10.5px;}
+    #receipt .rlogo{width:55%; margin:0 auto 2mm; display:block; color:#000;}
+    #receipt .c{text-align:center;}
+    #receipt hr{border:none; border-top:1px dashed #000; margin:2mm 0;}
+    #receipt table{width:100%; border-collapse:collapse;}
+    #receipt td{padding:0; vertical-align:top;}
+    #receipt td.r{text-align:right; white-space:nowrap;}
+    #receipt .tot td{font-weight:700; font-size:1.15em; padding-top:1mm;}
+    #receipt .nm{padding-top:1mm;}
+  }
+  @page{margin:4mm;}
+
   /* likes */
   .rank{display:grid; grid-template-columns:28px 44px 1fr auto; gap:10px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin-bottom:6px;}
   .rank .n{color:var(--muted); font-variant-numeric:tabular-nums; text-align:right;}
@@ -117,7 +172,8 @@
     </span>
   </div>
   <nav class="tabs" id="tabs" role="tablist" hidden>
-    <button role="tab" data-tab="messages" aria-selected="true">Messages<span class="pill" id="unreadPill" hidden></span></button>
+    <button role="tab" data-tab="orders" aria-selected="true">Commandes / Orders<span class="pill" id="ordersPill" hidden></span></button>
+    <button role="tab" data-tab="messages" aria-selected="false">Messages<span class="pill" id="unreadPill" hidden></span></button>
     <button role="tab" data-tab="menu" aria-selected="false">Menu</button>
     <button role="tab" data-tab="likes" aria-selected="false">J’aime / Likes</button>
     <button role="tab" data-tab="contact" aria-selected="false">Contact</button>
@@ -147,6 +203,20 @@
     </div>
     <p class="err" id="pwErr"></p>
   </form>
+
+  <section id="tab-orders" hidden>
+    <div class="bar">
+      <button class="small" id="newOrderBtn">+ Nouvelle commande / New order</button>
+      <span class="seg" id="orderView"><button type="button" data-view="active" aria-pressed="true">En cours / Active</button><button type="button" data-view="all" aria-pressed="false">Toutes / All</button></span>
+    </div>
+    <div class="bar">
+      <span class="count" id="ordersInfo"></span>
+      <label class="count">Ticket <select id="receiptWidth" style="width:auto; margin:0; padding:4px 8px; font-size:.85rem"><option value="80">80 mm</option><option value="58">58 mm</option></select></label>
+    </div>
+    <p class="err" id="ordersErr"></p>
+    <div id="orderList"></div>
+    <button class="small ghost" id="ordersMore" hidden>Commandes plus anciennes / Older orders</button>
+  </section>
 
   <section id="tab-messages" hidden>
     <div class="bar">
@@ -249,6 +319,43 @@
     </div>
   </form>
 </div>
+<div class="overlay" id="orderEditor" hidden>
+  <form class="sheet" id="orderForm" novalidate>
+    <h3>Nouvelle commande / New order</h3>
+    <label class="f" for="oTable">Table N°</label>
+    <input type="text" id="oTable" maxlength="12" inputmode="numeric" autocomplete="off" style="max-width:10em">
+    <input type="search" id="oSearch" placeholder="Rechercher un article / Search an item" autocomplete="off">
+    <div class="picker" id="oPicker"></div>
+    <div id="oCart"></div>
+    <div class="bigtotal"><span>Total</span><span id="oTotal">0 DA</span></div>
+    <p class="err" id="oErr"></p>
+    <div class="actions">
+      <button type="button" class="small ghost" id="oCancel">Annuler / Cancel</button>
+      <button type="submit" class="small" id="oSave">Créer la commande / Create order</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="payEditor" hidden>
+  <form class="sheet" id="payForm" novalidate>
+    <h3 id="payTitle">Encaisser / Take cash</h3>
+    <p class="note">Espèces uniquement / Cash only</p>
+    <div class="bigtotal"><span>Total</span><span id="payTotal"></span></div>
+    <label class="f" for="payCash">Montant reçu (DA) / Amount received (DA)</label>
+    <input type="text" id="payCash" inputmode="numeric" autocomplete="off">
+    <div class="cashq" id="payQuick"></div>
+    <label class="f">Monnaie à rendre / Change</label>
+    <div class="change" id="payChange">—</div>
+    <p class="err" id="payErr"></p>
+    <div class="actions">
+      <button type="button" class="small ghost" id="payCancel">Annuler / Cancel</button>
+      <button type="submit" class="small" id="paySave">Valider le paiement / Confirm payment</button>
+    </div>
+  </form>
+</div>
+
+<div id="receipt" aria-hidden="true"></div>
+<template id="logoTpl"><svg xmlns="http://www.w3.org/2000/svg" class="rlogo" aria-hidden="true" focusable="false" viewBox="184 240 1889 839"><path fill="currentColor" fill-rule="evenodd" d="M1259.9,1046.9C1237.1,1045.3 1215.7,1033.0 1211.6,1019.0C1206.8,1002.8 1213.7,980.7 1228.5,965.1C1250.0,942.5 1306.6,900.0 1339.7,881.7C1349.3,876.4 1359.4,870.3 1386.9,852.9C1393.2,849.0 1406.0,841.6 1415.4,836.5C1432.0,827.6 1440.1,823.0 1460.0,811.0C1465.2,807.8 1476.0,801.8 1484.0,797.5C1492.0,793.3 1499.0,789.4 1499.5,789.0C1500.0,788.6 1505.5,785.7 1511.5,782.5C1517.5,779.3 1532.5,771.2 1544.6,764.4C1556.8,757.6 1573.3,748.9 1581.1,744.9C1604.0,733.5 1607.5,730.2 1612.1,715.5C1619.8,691.4 1609.1,675.5 1585.5,675.7C1573.7,675.8 1564.3,678.2 1538.5,687.3C1512.0,696.7 1500.7,699.4 1490.2,698.8C1481.6,698.3 1478.8,697.0 1475.8,692.2C1471.6,685.4 1475.2,677.0 1487.5,665.0C1498.7,654.0 1513.0,637.3 1515.1,632.6C1521.5,618.4 1510.9,609.9 1496.1,617.4C1484.7,623.3 1463.7,639.2 1451.5,651.5C1444.8,658.1 1436.3,666.2 1432.5,669.5C1428.6,672.8 1421.3,679.4 1416.2,684.2C1399.3,700.0 1377.1,715.9 1355.5,727.8C1349.5,731.1 1341.1,735.7 1337.0,738.1C1321.0,747.1 1314.9,750.1 1297.5,757.0C1287.6,760.9 1277.9,764.8 1276.0,765.7C1268.0,769.3 1253.7,773.9 1241.0,777.1C1228.5,780.2 1226.3,780.4 1211.0,780.5C1180.5,780.5 1164.3,774.6 1150.4,758.3C1135.1,740.3 1133.6,725.2 1143.5,690.7C1150.4,666.6 1149.9,667.5 1173.7,643.4C1209.1,607.5 1235.9,588.5 1257.8,583.6C1267.8,581.3 1288.0,581.3 1293.9,583.4C1308.4,588.7 1312.9,601.8 1305.5,616.7C1299.1,629.6 1289.6,638.3 1266.0,653.2C1250.1,663.2 1245.4,665.7 1217.6,678.1C1199.4,686.2 1196.0,688.1 1191.4,692.6C1177.5,706.1 1181.4,729.5 1198.9,738.2C1206.1,741.8 1229.7,741.4 1242.4,737.6C1282.1,725.6 1323.1,704.2 1363.0,674.7C1368.2,670.8 1377.4,664.0 1383.5,659.7C1396.4,650.3 1408.8,639.4 1422.0,626.0C1439.4,608.2 1471.7,584.7 1495.7,572.3C1513.5,563.2 1520.8,560.6 1536.0,558.4C1563.9,554.2 1582.0,564.1 1582.0,583.4C1582.0,591.9 1579.9,598.4 1572.3,613.0C1565.5,626.2 1564.4,630.9 1566.8,636.5C1569.9,643.7 1574.6,644.5 1600.5,642.6C1611.5,641.7 1611.5,641.7 1622.5,645.4C1640.8,651.6 1645.8,656.0 1651.5,671.0C1656.5,684.1 1661.4,689.0 1669.2,689.0C1674.1,689.0 1681.0,685.4 1697.6,674.3C1735.3,649.0 1767.4,632.1 1794.7,623.2C1807.9,618.8 1813.2,615.8 1819.8,608.5C1826.7,601.1 1828.6,594.7 1825.4,590.1C1822.4,585.9 1817.6,584.7 1800.5,584.0C1791.0,583.6 1783.4,582.8 1781.8,582.0C1776.3,579.4 1775.7,571.4 1780.4,562.2C1783.8,555.6 1786.8,554.2 1801.5,552.4C1845.2,547.3 1854.1,541.8 1856.6,518.5C1856.9,515.2 1858.1,508.9 1859.2,504.5C1862.3,491.8 1862.9,486.8 1864.0,464.0C1865.4,435.1 1868.5,417.9 1874.6,404.5C1878.2,396.7 1886.6,392.1 1892.1,395.0C1895.1,396.7 1894.4,401.1 1889.6,411.8C1883.9,424.2 1882.4,430.4 1881.0,446.5C1879.7,461.7 1878.2,472.1 1874.0,495.5C1869.3,521.5 1869.3,522.1 1872.8,534.1C1874.5,539.8 1876.2,546.1 1876.5,548.0C1877.5,553.1 1880.6,557.6 1885.9,561.6C1894.4,568.1 1895.1,572.7 1888.9,581.4C1882.3,590.6 1884.6,594.0 1897.6,594.0C1911.1,594.0 1926.8,589.9 1937.0,583.7C1948.0,577.1 1952.2,577.6 1956.5,586.0C1960.3,593.4 1964.5,597.7 1973.1,602.6C1987.3,610.8 1992.3,617.8 1994.1,632.0C1995.9,646.5 1992.8,664.2 1986.0,678.5C1975.3,701.2 1967.5,711.7 1951.6,725.1C1939.2,735.5 1936.6,740.4 1940.6,746.6C1943.7,751.2 1947.9,752.1 1968.5,752.5C1999.9,753.0 2018.5,758.1 2030.6,769.2C2046.8,784.1 2045.6,813.5 2028.0,833.5C2011.3,852.4 1982.0,873.2 1959.1,882.2C1952.2,884.9 1942.7,889.0 1938.0,891.2C1917.3,901.0 1887.2,911.1 1870.7,913.9C1863.7,915.1 1850.9,918.1 1842.2,920.6C1821.3,926.7 1768.0,935.9 1753.7,936.0C1740.8,936.0 1736.2,928.1 1743.1,917.7C1749.8,907.5 1756.8,904.7 1779.5,903.0C1813.0,900.6 1832.2,896.5 1881.1,881.7C1964.0,856.4 2003.2,831.4 2004.8,802.8C2005.8,785.6 1994.3,775.0 1967.5,768.3C1957.8,765.9 1954.5,765.6 1940.0,765.6C1918.4,765.5 1917.9,765.7 1904.7,781.9C1889.4,800.6 1865.0,822.7 1853.3,828.6C1847.3,831.6 1843.9,831.3 1841.4,827.5C1840.0,825.3 1840.0,824.8 1841.6,821.5C1843.7,816.9 1847.7,813.7 1860.8,805.9C1874.1,798.1 1879.7,792.3 1887.9,778.6C1904.8,750.1 1913.2,729.0 1919.3,700.0C1932.0,639.6 1931.9,641.2 1925.3,633.9C1920.3,628.4 1916.0,627.3 1905.4,628.8C1893.6,630.6 1884.9,633.4 1874.2,639.2C1859.3,647.1 1848.8,649.8 1820.5,653.0C1806.3,654.6 1797.9,656.6 1788.1,660.6C1759.1,672.6 1742.3,681.6 1711.5,701.8C1688.8,716.7 1678.8,722.8 1668.7,728.0C1652.7,736.2 1646.2,742.7 1640.6,755.7C1627.3,786.6 1610.5,821.0 1603.8,830.8C1600.2,836.2 1584.1,857.4 1571.7,873.2C1545.6,906.6 1510.2,941.9 1477.5,967.2C1455.7,984.1 1385.7,1020.3 1353.5,1031.5C1342.1,1035.4 1306.1,1043.7 1293.0,1045.4C1277.2,1047.4 1271.1,1047.7 1259.9,1046.9ZM829.0,1021.3C816.0,1018.8 805.7,1013.5 801.4,1007.1C796.4,999.5 797.8,992.3 811.3,957.0C818.8,937.4 838.4,892.1 845.3,878.5C848.4,872.5 852.5,863.2 854.6,858.0C856.6,852.8 859.7,845.5 861.6,841.8C863.5,838.0 867.2,829.7 869.9,823.2C872.6,816.8 876.6,807.2 878.8,802.0C891.2,772.6 892.0,761.0 882.6,748.1C875.4,738.2 874.5,733.7 878.0,723.7C883.9,706.9 877.2,701.6 849.3,700.9C810.1,699.9 812.3,699.5 793.3,709.2C770.4,720.9 764.9,722.4 745.0,722.4C729.7,722.4 729.4,722.3 718.5,718.6C675.4,703.7 658.5,677.8 670.1,644.3C672.4,637.6 676.4,631.8 682.9,625.7C689.6,619.4 696.8,616.2 706.9,615.0C716.4,613.8 716.8,613.6 731.3,606.5C747.1,598.8 752.4,597.6 770.0,597.7C809.7,597.8 832.6,615.6 836.0,649.0C837.5,663.3 839.6,667.3 848.0,671.5C850.9,673.0 853.2,673.2 863.5,672.7C870.1,672.3 877.1,671.8 879.0,671.5C890.6,669.6 899.4,667.5 905.9,665.0C914.5,661.6 939.7,645.0 946.5,638.2C954.7,630.0 966.0,603.4 972.0,578.2C975.5,563.8 977.4,559.7 983.0,554.6C995.0,543.8 1011.7,544.5 1023.6,556.4C1030.4,563.3 1031.8,568.5 1030.0,581.1C1026.8,603.3 1032.9,607.3 1055.4,597.6C1073.1,590.0 1079.3,588.6 1095.0,588.6C1106.7,588.6 1109.3,588.9 1114.3,590.9C1128.8,596.6 1139.0,605.3 1143.1,615.5C1145.2,620.8 1145.5,623.1 1145.5,635.5C1145.5,656.6 1144.2,659.4 1129.0,671.0C1124.9,674.1 1116.3,680.6 1110.0,685.4C1096.4,695.8 1089.1,700.0 1075.9,705.1C1070.5,707.2 1059.4,712.3 1051.3,716.4C1034.7,724.7 1021.9,729.3 985.1,740.0C975.7,742.7 969.2,746.9 965.2,752.9C961.9,757.8 946.7,791.2 939.6,809.5C935.2,820.5 926.7,839.9 916.2,862.5C908.7,878.8 892.0,918.4 885.5,935.5C882.6,943.3 876.3,957.4 871.7,967.0C867.0,976.6 861.6,988.8 859.6,994.0C852.9,1011.4 849.8,1016.5 844.0,1019.5C841.0,1021.1 832.8,1022.1 829.0,1021.3ZM1298.5,1008.0C1322.5,1004.5 1351.1,994.8 1390.9,976.5C1445.9,951.2 1499.7,907.2 1540.5,854.1C1551.6,839.6 1573.4,807.5 1576.0,801.8C1579.7,793.6 1577.9,785.2 1571.8,783.1C1565.2,780.8 1556.5,784.4 1535.3,798.2C1528.3,802.8 1520.2,807.9 1517.5,809.4C1511.2,813.0 1485.9,829.0 1471.5,838.5C1465.5,842.5 1456.0,848.2 1450.4,851.3C1444.8,854.3 1434.5,860.6 1427.4,865.3C1420.3,869.9 1413.4,874.3 1412.0,875.0C1410.6,875.7 1403.7,879.9 1396.5,884.3C1334.6,922.6 1274.5,970.3 1265.0,989.0C1260.7,997.5 1262.3,1004.5 1269.3,1007.5C1273.1,1009.2 1288.3,1009.4 1298.5,1008.0ZM351.8,838.5C351.5,838.2 341.2,837.5 328.9,837.0C307.4,836.1 281.8,833.4 271.4,831.0C262.7,828.9 244.9,819.5 238.1,813.4C221.5,798.4 213.4,777.2 217.1,758.8C219.6,746.3 229.7,723.7 241.5,704.0C244.7,698.8 253.4,682.6 260.8,668.0C273.8,642.7 281.8,628.7 296.2,606.5C299.7,601.0 305.3,591.8 308.5,586.1C311.7,580.3 322.5,563.4 332.4,548.5C342.4,533.6 354.5,515.1 359.5,507.5C368.1,494.1 386.5,466.5 390.8,460.4C391.9,458.8 399.8,446.9 408.3,434.0C427.4,405.0 442.5,382.8 455.6,364.5C461.1,356.8 470.1,344.0 475.5,336.0C484.1,323.4 488.0,318.9 505.0,302.0C526.0,281.0 529.4,278.6 540.1,276.9C555.0,274.5 571.0,279.2 580.5,288.7C587.9,296.0 591.3,304.3 591.8,315.8C592.6,333.6 588.9,347.4 581.7,353.5C576.6,357.9 571.6,358.7 558.5,357.2C553.0,356.5 546.8,356.3 544.6,356.7C533.7,358.5 521.2,372.9 489.3,420.5C484.5,427.6 478.3,436.6 475.5,440.4C458.8,463.5 424.9,513.4 393.2,561.8C387.3,570.7 376.8,586.7 369.9,597.3C362.9,607.8 354.2,621.7 350.5,628.0C346.7,634.3 340.9,643.8 337.5,649.0C334.1,654.2 328.1,663.9 324.1,670.5C320.1,677.1 314.8,685.4 312.5,689.0C305.0,700.5 286.9,733.0 280.7,746.0C273.2,761.8 271.8,768.5 274.7,775.1C278.7,784.1 284.4,786.5 311.5,790.5C334.8,794.0 350.6,794.6 372.5,792.7C382.4,791.8 395.0,790.8 400.5,790.5C415.7,789.6 452.0,786.2 475.0,783.5C486.3,782.2 498.4,780.8 502.0,780.5C505.6,780.1 515.0,778.8 523.0,777.5C531.0,776.2 544.7,774.7 553.5,774.0C562.3,773.4 574.0,772.3 579.5,771.5C622.3,765.4 739.2,763.9 771.5,769.0C779.3,770.3 787.7,774.6 791.4,779.3C795.4,784.3 796.1,792.8 793.0,797.8C789.4,803.5 787.8,803.8 754.0,803.5C716.7,803.2 703.8,804.0 690.0,807.5C680.8,809.9 677.2,810.3 661.0,810.5C648.9,810.8 638.2,811.6 630.0,812.9C623.1,814.0 613.9,815.2 609.5,815.5C600.8,816.2 574.4,819.6 547.5,823.5C538.1,824.9 525.5,826.7 519.5,827.5C513.5,828.3 504.9,829.6 500.5,830.4C496.1,831.2 484.5,832.2 474.7,832.6C464.9,832.9 450.1,834.0 441.7,835.0C432.3,836.1 417.4,836.8 402.5,836.9C389.3,837.0 375.6,837.5 372.0,838.0C365.0,839.0 352.7,839.3 351.8,838.5ZM1004.3,714.5C1014.0,712.0 1051.0,698.0 1062.6,692.5C1096.3,676.5 1116.6,653.0 1114.7,632.1C1112.7,609.2 1088.6,602.2 1062.0,616.7C1043.4,626.8 1002.4,662.1 993.3,675.9C983.9,690.0 980.4,703.9 984.6,709.8C988.9,715.6 994.7,717.0 1004.3,714.5ZM1954.4,707.6C1967.0,702.3 1978.0,683.4 1978.2,666.4C1978.5,642.9 1962.4,626.7 1951.4,639.4C1947.5,643.9 1946.5,647.3 1944.0,664.6C1942.9,672.2 1941.3,681.2 1940.4,684.5C1938.0,693.6 1938.0,702.3 1940.5,705.0C1944.2,709.1 1948.8,709.9 1954.4,707.6ZM761.5,703.6C767.3,701.8 772.8,696.8 773.6,692.4C774.6,686.9 772.4,682.6 764.0,674.0C759.6,669.6 754.3,662.9 752.1,659.2C741.8,641.6 729.8,638.5 716.6,650.0C701.3,663.5 706.2,688.4 726.2,698.6C737.7,704.5 751.8,706.5 761.5,703.6ZM795.9,663.7C806.5,653.9 799.5,630.8 784.5,626.5C770.9,622.5 760.6,632.6 764.6,646.1C766.4,652.0 775.6,662.4 781.5,665.2C786.4,667.5 792.4,666.9 795.9,663.7ZM1235.4,649.1C1251.7,640.6 1260.7,633.6 1262.9,627.7C1265.0,622.3 1264.3,618.4 1260.8,615.5C1253.8,609.6 1240.1,614.5 1225.9,627.8C1213.6,639.3 1210.4,646.5 1215.4,651.4C1219.4,655.5 1224.2,654.9 1235.4,649.1ZM1825.8,490.8C1819.0,481.6 1815.9,466.1 1817.8,450.6C1820.2,431.7 1827.7,416.6 1851.1,384.5C1876.7,349.3 1885.3,325.5 1884.9,292.0C1884.7,283.5 1885.0,275.5 1885.4,274.2C1887.1,269.0 1893.1,273.6 1897.4,283.3C1906.4,303.5 1901.7,335.7 1885.2,368.9C1881.4,376.4 1877.3,385.1 1876.0,388.4C1874.1,393.1 1871.5,396.5 1861.8,406.4C1837.3,431.4 1830.8,446.6 1831.1,478.4C1831.2,495.2 1830.4,497.1 1825.8,490.8Z"/></svg></template>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -285,6 +392,13 @@
     if (d.error === 'bad_section') return 'Catégorie inconnue, rechargez la page / Unknown category, reload the page';
     if (d.error === 'bad_instagram') return 'Instagram : @nom ou lien instagram.com / Instagram: @name or instagram.com link';
     if (d.error === 'bad_maps') return 'Localisation : collez un lien Google Maps (https://maps.app.goo.gl/…) / Location: paste a Google Maps link';
+    if (d.error === 'table_required') return 'Indiquez le numéro de table / Enter the table number';
+    if (d.error === 'items_required') return 'Ajoutez au moins un article / Add at least one item';
+    if (d.error === 'item_unavailable') return 'Un article n’est plus au menu, retirez-le / An item is no longer on the menu, remove it';
+    if (d.error === 'price_required') return 'Indiquez le prix des articles « Prix sur place » / Enter the price of “Prix sur place” items';
+    if (d.error === 'not_enough_cash') return 'Montant reçu inférieur au total / Amount received is less than the total';
+    if (d.error === 'payment_required') return 'Encaissez d’abord la commande / Take the cash payment first';
+    if (d.error === 'order_completed') return 'Commande déjà terminée / Order already completed';
     if (d.error === 'bad_email') return 'E-mail invalide / Invalid e-mail';
     if (d.error === 'bad_phone') return 'Téléphone : chiffres, espaces et + seulement / Phone: digits, spaces and + only';
     if (d.error === 'name_and_section_required') return 'Le nom français est obligatoire / French name is required';
@@ -295,7 +409,7 @@
 
   // ---------------- session / tabs
   function hideAll(){
-    ['tab-messages','tab-menu','tab-likes','tab-contact','login','pwForm'].forEach(function(id){ $(id).hidden = true; });
+    ['tab-orders','tab-messages','tab-menu','tab-likes','tab-contact','login','pwForm'].forEach(function(id){ $(id).hidden = true; });
     $('tabs').hidden = true; $('logout').hidden = true; $('pwBtn').hidden = true;
   }
   function showLogin(msg){
@@ -319,11 +433,12 @@
     if (d.error === 'password_change_required'){ showPwForm(true); return true; }
     return false;
   }
-  var currentTab = 'messages';
+  var currentTab = 'orders';
   function showTab(name){
     currentTab = name;
     document.querySelectorAll('#tabs button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
-    ['messages','menu','likes','contact'].forEach(function(n){ $('tab-' + n).hidden = n !== name; });
+    ['orders','messages','menu','likes','contact'].forEach(function(n){ $('tab-' + n).hidden = n !== name; });
+    if (name === 'orders') renderOrders();
     if (name === 'menu') loadMenu();
     if (name === 'likes') loadMenu().then(renderLikes);
     if (name === 'contact') loadContact();
@@ -653,6 +768,312 @@
     }).catch(function(){ btn.disabled = false; $('ciErr').textContent = errText({}); });
   });
 
+  // ---------------- orders (cash only)
+  var STATUS = [['new', 'Nouvelle / New'], ['preparing', 'En préparation / Preparing'], ['ready', 'Prête / Ready'],
+                ['paid', 'Payée / Paid'], ['completed', 'Terminée / Completed']];
+  function statusLabel(k){ var x = STATUS.filter(function(s){ return s[0] === k; })[0]; return x ? x[1] : k; }
+  function money(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' DA'; }
+  function orderNo(id){ return String(id).padStart(4, '0'); }
+  function fmtTime(ms){ try{ return new Date(ms).toLocaleString('fr-FR', { dateStyle:'short', timeStyle:'short' }); }catch(e){ return ''; } }
+  // same rule as the server: "1,200 DA" -> 1200; "Prix sur place" -> null (price entered by staff)
+  function parsePrice(t){
+    var m = String(t || '').trim().match(/^(\d{1,3}(?:[ ,.\u00a0\u202f]\d{3})+|\d{1,7})\s*(?:DA|DZD|دج)?$/i);
+    return m ? parseInt(m[1].replace(/\D/g, ''), 10) : null;
+  }
+  function wholeDA(v){ v = String(v).replace(/[\s,.\u00a0\u202f]/g, '').replace(/DA$/i, ''); return /^\d{1,9}$/.test(v) ? parseInt(v, 10) : null; }
+
+  var orders = {};            // id -> order, as returned by /api/orders
+  var orderView = 'active', oldestId = null, lastSync = 0, seen = {}, polling = null;
+  function ordersReq(url){
+    return api('GET', url).then(function(d){
+      if (sessionProblem(d)) return null;
+      if (!d.orders){ $('ordersErr').textContent = errText(d); return null; }
+      $('ordersErr').textContent = ''; return d;
+    }, function(){ $('ordersErr').textContent = errText({}); return null; });
+  }
+  function loadOrders(){
+    return ordersReq('/api/orders?view=' + orderView).then(function(d){
+      if (!d) return;
+      orders = {}; d.orders.forEach(function(o){ orders[o.id] = o; seen[o.id] = true; });
+      oldestId = d.orders.length ? d.orders[d.orders.length - 1].id : null;
+      $('ordersMore').hidden = !d.more; lastSync = d.now;
+      renderOrders();
+    });
+  }
+  $('ordersMore').addEventListener('click', function(){
+    ordersReq('/api/orders?view=' + orderView + '&before=' + oldestId).then(function(d){
+      if (!d) return;
+      d.orders.forEach(function(o){ orders[o.id] = o; seen[o.id] = true; });
+      if (d.orders.length) oldestId = d.orders[d.orders.length - 1].id;
+      $('ordersMore').hidden = !d.more; renderOrders();
+    });
+  });
+  document.querySelectorAll('#orderView button').forEach(function(b){
+    b.addEventListener('click', function(){
+      orderView = b.getAttribute('data-view');
+      document.querySelectorAll('#orderView button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      loadOrders();
+    });
+  });
+
+  // new and changed orders appear by themselves: every 5 s ask for what changed since the last check
+  function beep(){
+    try{
+      var C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+      beep.ctx = beep.ctx || new C();
+      var o = beep.ctx.createOscillator(), g = beep.ctx.createGain();
+      o.frequency.value = 880; g.gain.value = 0.08; o.connect(g); g.connect(beep.ctx.destination);
+      o.start(); o.stop(beep.ctx.currentTime + 0.25);
+    }catch(e){}
+  }
+  function poll(){
+    if ($('tabs').hidden || document.hidden || !lastSync || poll.busy) return;
+    poll.busy = true;
+    // 10 s overlap so a write timed by another server clock is not missed; merging by id is harmless
+    api('GET', '/api/orders?since=' + (lastSync - 10000)).then(function(d){
+      poll.busy = false;
+      if (!d.orders){ if (d._status === 401) sessionProblem(d); return; }
+      var fresh = [];
+      d.orders.forEach(function(o){ if (!seen[o.id]){ seen[o.id] = true; fresh.push(o); } orders[o.id] = o; });
+      lastSync = d.now;
+      if (fresh.length){
+        beep();
+        toast('Nouvelle commande / New order — N° ' + fresh.map(function(o){ return orderNo(o.id) + ' (table ' + o.table + ')'; }).join(', '));
+      }
+      if (d.orders.length) renderOrders();
+    }, function(){ poll.busy = false; });
+  }
+  function startPolling(){ if (!polling) polling = setInterval(poll, 5000); }
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) poll(); });
+
+  function renderOrders(){
+    var list = $('orderList'); list.textContent = '';
+    var all = Object.keys(orders).map(function(k){ return orders[k]; }).sort(function(a, b){ return b.id - a.id; });
+    var shown = orderView === 'active' ? all.filter(function(o){ return o.status !== 'completed'; }) : all;
+    var nNew = all.filter(function(o){ return o.status === 'new'; }).length;
+    $('ordersPill').textContent = nNew; $('ordersPill').hidden = !nNew;
+    $('ordersInfo').textContent = shown.length + ' commande(s) / order(s)';
+    if (!shown.length) list.appendChild(el('p', 'empty', 'Aucune commande / No orders'));
+    shown.forEach(function(o){ list.appendChild(orderCard(o)); });
+  }
+  function orderCard(o){
+    var c = el('div', 'order st-' + o.status);
+    var h = el('div', 'oh');
+    h.appendChild(el('span', 'ono', 'N° ' + orderNo(o.id)));
+    h.appendChild(el('span', 'otable', 'Table ' + o.table));
+    h.appendChild(el('span', 'chip', statusLabel(o.status)));
+    h.appendChild(el('span', 'chip ' + (o.paid_at ? 'paid' : 'unpaid'), o.paid_at ? 'Payé / Paid' : 'Non payé / Unpaid'));
+    h.appendChild(el('span', 'otime', fmtTime(o.created_at)));
+    c.appendChild(h);
+    var t = el('table', 'lines');
+    o.items.forEach(function(it){
+      var tr = el('tr');
+      tr.appendChild(el('td', 'q', it.qty + ' ×'));
+      tr.appendChild(el('td', '', it.name_fr));
+      tr.appendChild(el('td', 'u', money(it.unit_price)));
+      tr.appendChild(el('td', 't', money(it.line_total)));
+      t.appendChild(tr);
+    });
+    var sum = el('tr', 'sum'); sum.appendChild(el('td')); sum.appendChild(el('td', '', 'Total')); sum.appendChild(el('td')); sum.appendChild(el('td', 't', money(o.total)));
+    t.appendChild(sum);
+    if (o.paid_at){
+      [['Espèces reçues / Cash received', o.cash_received], ['Monnaie rendue / Change', o.change]].forEach(function(p){
+        var tr = el('tr', 'cash'); tr.appendChild(el('td')); tr.appendChild(el('td', '', p[0])); tr.appendChild(el('td')); tr.appendChild(el('td', 't', money(p[1]))); t.appendChild(tr);
+      });
+    }
+    c.appendChild(t);
+    var st = el('div', 'ostat');
+    STATUS.forEach(function(sx){
+      var b = el('button', 'small', sx[1]); b.type = 'button';
+      b.setAttribute('aria-pressed', o.status === sx[0] ? 'true' : 'false');
+      b.disabled = (sx[0] === 'paid' || sx[0] === 'completed') && !o.paid_at;
+      if ((sx[0] === 'paid' || sx[0] === 'completed') && !o.paid_at) b.title = 'Encaissez d’abord / Take cash first';
+      b.onclick = function(){ if (o.status !== sx[0]) setOrderStatus(o, sx[0], b); };
+      st.appendChild(b);
+    });
+    c.appendChild(st);
+    var acts = el('div', 'actions');
+    if (o.status !== 'completed'){
+      var pay = el('button', 'small', o.paid_at ? 'Modifier le paiement / Edit payment' : 'Encaisser / Take cash');
+      pay.onclick = function(){ openPay(o); }; acts.appendChild(pay);
+    }
+    var pr = el('button', 'small ghost', 'Imprimer le ticket / Print receipt'); pr.onclick = function(){ printReceipt(o); };
+    acts.appendChild(pr);
+    c.appendChild(acts);
+    return c;
+  }
+  function gotOrder(o){ orders[o.id] = o; seen[o.id] = true; renderOrders(); }
+  function setOrderStatus(o, status, btn){
+    btn.disabled = true;
+    api('PATCH', '/api/orders?id=' + o.id, { status: status }).then(function(r){
+      if (sessionProblem(r)) return;
+      if (!r.ok){ btn.disabled = false; $('ordersErr').textContent = errText(r); return; }
+      $('ordersErr').textContent = ''; gotOrder(r.order);
+    }, function(){ btn.disabled = false; $('ordersErr').textContent = errText({}); });
+  }
+
+  // cash payment: amount received -> change
+  var payOrder = null;
+  function payChange(){
+    var cash = wholeDA($('payCash').value);
+    if (cash === null){ $('payChange').textContent = '—'; return null; }
+    $('payChange').textContent = cash >= payOrder.total ? money(cash - payOrder.total) : 'Manque / Missing ' + money(payOrder.total - cash);
+    return cash;
+  }
+  function openPay(o){
+    payOrder = o;
+    $('payTitle').textContent = 'Encaisser / Take cash — N° ' + orderNo(o.id) + ' · Table ' + o.table;
+    $('payTotal').textContent = money(o.total);
+    $('payCash').value = o.paid_at ? String(o.cash_received) : '';
+    var q = $('payQuick'); q.textContent = '';
+    var amounts = [o.total];
+    [500, 1000, 2000].forEach(function(step){ var a = Math.ceil(o.total / step) * step; if (a > o.total && amounts.indexOf(a) === -1) amounts.push(a); });
+    amounts.sort(function(a, b){ return a - b; }).slice(0, 4).forEach(function(a, i){
+      var b = el('button', 'small ghost', (i === 0 ? 'Exact · ' : '') + money(a)); b.type = 'button';
+      b.onclick = function(){ $('payCash').value = String(a); payChange(); };
+      q.appendChild(b);
+    });
+    $('payErr').textContent = ''; payChange();
+    $('payEditor').hidden = false; $('payCash').focus();
+  }
+  $('payCash').addEventListener('input', payChange);
+  $('payCancel').addEventListener('click', function(){ $('payEditor').hidden = true; });
+  $('payForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var cash = payChange();
+    if (cash === null){ $('payErr').textContent = 'Entrez le montant reçu en DA / Enter the amount received in DA'; return; }
+    if (cash < payOrder.total){ $('payErr').textContent = errText({ error: 'not_enough_cash' }); return; }
+    var btn = $('paySave'); btn.disabled = true; $('payErr').textContent = 'Enregistrement… / Saving…';
+    api('PATCH', '/api/orders?id=' + payOrder.id, { cash_received: cash }).then(function(r){
+      btn.disabled = false;
+      if (sessionProblem(r)) return;
+      if (!r.ok){ $('payErr').textContent = errText(r); return; }
+      $('payEditor').hidden = true; gotOrder(r.order);
+      toast('Payé — monnaie / Paid — change: ' + money(r.order.change));
+    }, function(){ btn.disabled = false; $('payErr').textContent = errText({}); });
+  });
+
+  // new order
+  var cart = [];   // [{ id, name, price (null = staff enters it), qty, manual }]
+  function orderableMenu(){
+    var active = sections(), ids = active.map(function(x){ return x.id; });
+    var items = allItems().filter(function(it){ return !it.hidden && ids.indexOf(it.section) !== -1; });
+    return active.map(function(sec){ return { sec: sec, items: items.filter(function(it){ return it.section === sec.id; }) }; })
+                 .filter(function(g){ return g.items.length; });
+  }
+  function renderPicker(){
+    var q = $('oSearch').value.trim().toLowerCase(), box = $('oPicker'); box.textContent = '';
+    orderableMenu().forEach(function(g){
+      var rows = g.items.filter(function(it){ return !q || (it.name_fr + ' ' + it.name_en).toLowerCase().indexOf(q) !== -1; });
+      if (!rows.length) return;
+      box.appendChild(el('div', 'pick-sec', g.sec.title_fr));
+      rows.forEach(function(it){
+        var r = el('div', 'pick');
+        var l = el('div'); l.appendChild(el('div', '', it.name_fr)); l.appendChild(el('div', 'pp', it.price)); r.appendChild(l);
+        var b = el('button', 'small', '+'); b.type = 'button'; b.setAttribute('aria-label', 'Ajouter / Add ' + it.name_fr);
+        b.onclick = function(){ addToCart(it); };
+        r.appendChild(b); box.appendChild(r);
+      });
+    });
+    if (!box.children.length) box.appendChild(el('p', 'empty', 'Aucun article / No item'));
+  }
+  function addToCart(it){
+    var line = cart.filter(function(l){ return l.id === it.id; })[0];
+    if (line) line.qty = Math.min(99, line.qty + 1);
+    else { var p = parsePrice(it.price); cart.push({ id: it.id, name: it.name_fr, price: p, manual: p === null ? '' : null, qty: 1 }); }
+    renderCart();
+  }
+  function lineUnit(l){ return l.price !== null ? l.price : wholeDA(l.manual); }
+  function renderCart(){
+    var box = $('oCart'); box.textContent = '';
+    cart.forEach(function(l, i){
+      var row = el('div', 'cart-line');
+      var nm = el('div', '', l.name);
+      if (l.price === null){
+        var inp = el('input'); inp.type = 'text'; inp.inputMode = 'numeric'; inp.placeholder = 'Prix DA / Price'; inp.value = l.manual;
+        inp.setAttribute('aria-label', 'Prix / Price ' + l.name);
+        inp.oninput = function(){ l.manual = inp.value; updateTotal(); };
+        nm.appendChild(inp);
+      } else nm.appendChild(el('div', 'pp', money(l.price)));
+      row.appendChild(nm);
+      var qd = el('div', 'qty');
+      var minus = el('button', 'small ghost', '−'); minus.type = 'button'; minus.setAttribute('aria-label', 'Moins / Less');
+      minus.onclick = function(){ l.qty--; if (l.qty < 1) cart.splice(i, 1); renderCart(); };
+      var plus = el('button', 'small ghost', '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Plus / More');
+      plus.onclick = function(){ l.qty = Math.min(99, l.qty + 1); renderCart(); };
+      qd.appendChild(minus); qd.appendChild(el('span', '', String(l.qty))); qd.appendChild(plus);
+      row.appendChild(qd);
+      var lt = el('div', 'lt'); lt.setAttribute('data-line', i); row.appendChild(lt);
+      box.appendChild(row);
+    });
+    updateTotal();
+  }
+  function updateTotal(){
+    var total = 0, missing = false;
+    cart.forEach(function(l, i){
+      var u = lineUnit(l), lt = $('oCart').querySelector('[data-line="' + i + '"]');
+      if (u === null){ missing = true; lt.textContent = '—'; } else { total += u * l.qty; lt.textContent = money(u * l.qty); }
+    });
+    $('oTotal').textContent = money(total) + (missing ? ' + ?' : '');
+    $('oErr').textContent = '';
+  }
+  $('oSearch').addEventListener('input', renderPicker);
+  $('newOrderBtn').addEventListener('click', function(){
+    var open = function(){
+      cart = []; $('oTable').value = ''; $('oSearch').value = ''; $('oErr').textContent = '';
+      renderPicker(); renderCart(); $('orderEditor').hidden = false; $('oTable').focus();
+    };
+    if (base) open(); else loadMenu().then(function(){ if (base) open(); });
+  });
+  $('oCancel').addEventListener('click', function(){ $('orderEditor').hidden = true; });
+  $('orderForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var table = $('oTable').value.trim();
+    if (!table){ $('oErr').textContent = errText({ error: 'table_required' }); $('oTable').focus(); return; }
+    if (!cart.length){ $('oErr').textContent = errText({ error: 'items_required' }); return; }
+    if (cart.some(function(l){ return lineUnit(l) === null; })){ $('oErr').textContent = errText({ error: 'price_required' }); return; }
+    var body = { table: table, items: cart.map(function(l){ var x = { id: l.id, qty: l.qty }; if (l.price === null) x.price = lineUnit(l); return x; }) };
+    var btn = $('oSave'); btn.disabled = true; $('oErr').textContent = 'Enregistrement… / Saving…';
+    api('POST', '/api/orders', body).then(function(r){
+      btn.disabled = false;
+      if (sessionProblem(r)) return;
+      if (!r.ok){ $('oErr').textContent = errText(r); return; }
+      $('orderEditor').hidden = true; gotOrder(r.order);
+      toast('Commande N° ' + orderNo(r.order.id) + ' créée / created');
+    }, function(){ btn.disabled = false; $('oErr').textContent = errText({}); });
+  });
+
+  // receipt: printed with the browser's print dialog (café receipt printer or any printer)
+  var RW_KEY = 'lopez-receipt-width';
+  try{ if (localStorage.getItem(RW_KEY) === '58') $('receiptWidth').value = '58'; }catch(e){}
+  $('receiptWidth').addEventListener('change', function(){ try{ localStorage.setItem(RW_KEY, this.value); }catch(e){} });
+  function printReceipt(o){
+    var r = $('receipt'); r.textContent = '';
+    r.className = $('receiptWidth').value === '58' ? 'w58' : '';
+    r.appendChild(document.importNode($('logoTpl').content, true));
+    r.appendChild(el('hr'));
+    var head = el('table');
+    [['Commande / Order', 'N° ' + orderNo(o.id)], ['Table', o.table], ['Date', fmtTime(o.created_at)]].forEach(function(p){
+      var tr = el('tr'); tr.appendChild(el('td', '', p[0])); tr.appendChild(el('td', 'r', p[1])); head.appendChild(tr);
+    });
+    r.appendChild(head); r.appendChild(el('hr'));
+    var t = el('table');
+    o.items.forEach(function(it){
+      var tr1 = el('tr'); var nm = el('td', 'nm', it.name_fr); nm.colSpan = 2; tr1.appendChild(nm); t.appendChild(tr1);
+      var tr2 = el('tr'); tr2.appendChild(el('td', '', '  ' + it.qty + ' x ' + money(it.unit_price))); tr2.appendChild(el('td', 'r', money(it.line_total))); t.appendChild(tr2);
+    });
+    r.appendChild(t); r.appendChild(el('hr'));
+    var s2 = el('table');
+    var rows = [['TOTAL', money(o.total), 'tot']];
+    if (o.paid_at){ rows.push(['Espèces / Cash', money(o.cash_received)]); rows.push(['Rendu / Change', money(o.change)]); }
+    rows.push(['Paiement / Payment', o.paid_at ? 'PAYÉ / PAID' : 'NON PAYÉ / UNPAID']);
+    rows.forEach(function(p){ var tr = el('tr', p[2] || ''); tr.appendChild(el('td', '', p[0])); tr.appendChild(el('td', 'r', p[1])); s2.appendChild(tr); });
+    r.appendChild(s2); r.appendChild(el('hr'));
+    if (o.paid_at) r.appendChild(el('div', 'c', 'Payé le / Paid ' + fmtTime(o.paid_at)));
+    r.appendChild(el('div', 'c', 'Merci ! / Thank you!'));
+    window.print();
+  }
+
   // ---------------- likes
   function renderLikes(){
     if (!base) return;
@@ -685,6 +1106,7 @@
       if (ok === false) return;
       hideAll(); $('tabs').hidden = false; $('logout').hidden = false; $('pwBtn').hidden = false;
       showTab(currentTab);
+      loadOrders(); startPolling();
     });
   }
   $('login').addEventListener('submit', function(e){
